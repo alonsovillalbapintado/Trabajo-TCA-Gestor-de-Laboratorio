@@ -4,6 +4,9 @@ from src.models.experimento import Experimento
 from src.models.muestra import Muestra
 from src.models.equipamiento import Equipamiento
 
+# Añade esta importación arriba con las demás
+from src.persistence.database import GestorBaseDatos
+
 def mostrar_menu():
     print("\n" + "="*40)
     print("🔬 LABTRACK: GESTOR DE LABORATORIO 🔬")
@@ -17,6 +20,9 @@ def mostrar_menu():
     return input("Selecciona una opción: ").strip()
 
 def ejecutar_flujo_principal():
+    # 1. Arrancamos la conexión a la base de datos
+    db = GestorBaseDatos()
+    
     # Variables para mantener los objetos en memoria durante la ejecución
     experimento_actual = None
     investigador_actual = None
@@ -43,6 +49,9 @@ def ejecutar_flujo_principal():
             nombre_exp = input("Nombre del experimento: ")
             experimento_actual = Experimento(nombre_exp, investigador_actual)
             
+            # NUEVO: Guardamos el experimento recién creado en SQLite
+            db.guardar_experimento(experimento_actual)
+            
             print(f"\n✅ ¡Éxito! Registrado {investigador_actual.__class__.__name__}: {investigador_actual.nombre}")
             print(f"✅ Experimento '{experimento_actual.nombre}' creado con ID: {experimento_actual.id_experimento}")
 
@@ -63,7 +72,10 @@ def ejecutar_flujo_principal():
             else:
                 accion = input("Describe la acción realizada: ")
                 experimento_actual.registrar_evento(accion)
-                print("✅ Evento registrado en el historial.")
+                
+            # NUEVO: Actualizamos el experimento en SQLite para que guarde el nuevo evento
+            db.guardar_experimento(experimento_actual)
+            print("✅ Evento registrado en el historial y guardado en Base de Datos.")
 
         elif opcion == '3':
             if not experimento_actual:
@@ -73,7 +85,10 @@ def ejecutar_flujo_principal():
             nueva_version = input("\nIndica la nomenclatura de la nueva versión (ej. 'v1.1' o '2.0'): ")
             # Llamamos al método real que hace la copia profunda
             experimento_actual = experimento_actual.bifurcar_version(nueva_version)
-            print(f"✅ Experimento bifurcado correctamente. Nueva versión activa: {experimento_actual.version}")
+            
+            # NUEVO: Guardamos la nueva versión bifurcada (se creará una fila nueva en SQLite por tener otro UUID)
+            db.guardar_experimento(experimento_actual)
+            print(f"✅ Experimento bifurcado y guardado en Base de Datos. Nueva versión activa: {experimento_actual.version}")
 
         elif opcion == '4':
             if not experimento_actual:
@@ -83,7 +98,7 @@ def ejecutar_flujo_principal():
             print(f"\n--- ESTADO DEL EXPERIMENTO ---")
             print(f"Nombre:       {experimento_actual.nombre}")
             print(f"Versión:      {experimento_actual.version}")
-            print(f"Responsable: {experimento_actual.investigador_principal.nombre} ({experimento_actual.investigador_principal.especialidad})")
+            print(f"Responsable:  {experimento_actual.investigador_principal.nombre} ({experimento_actual.investigador_principal.especialidad})")
             print(f"Estado:       {experimento_actual.estado}")
             
             print("\n--- HISTORIAL DE TRAZABILIDAD ---")
