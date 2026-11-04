@@ -9,7 +9,8 @@ class Muestra:
         self.unidad_medida = unidad_medida
         
     def consumir_cantidad(self, cantidad: float):
-        if cantidad <= self.cantidad_disponible:
-            self.cantidad_disponible -= cantidad
-        else:
-            raise ValueError("No hay suficiente cantidad disponible")
+        if cantidad <= 0:
+            raise ValueError("La cantidad a consumir debe ser mayor que 0.")
+        if cantidad > self.cantidad_disponible:
+            raise ValueError("No hay suficiente cantidad.")
+        self.cantidad_disponible -= cantidad
