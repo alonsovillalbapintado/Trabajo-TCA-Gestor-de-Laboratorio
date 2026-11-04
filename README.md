@@ -1,63 +1,85 @@
-# LabTrack 🔬
+# 🔬 LabTrack - Gestor de Laboratorio de Investigación
 
-Gestor integral para laboratorios de investigación. Permite controlar experimentos, muestras, equipamiento y garantizar la trazabilidad completa de los resultados.
+**Grupo 2**  
+**Integrantes:** Matías Mayor, Alonso Villalba Pintado, Antonio Hermana Rubio  
+**Asignatura:** Técnicas de Programación Avanzada (PRAC2)  
 
-## Estructura del Proyecto (Arquitectura)
-Para mantener un código limpio y escalable, el proyecto se divide en las siguientes capas:
-- `src/models/`: Entidades principales del dominio (Investigador, Muestra, Equipamiento, Experimento) y lógica central de Trazabilidad.
-- `src/services/`: Lógica de negocio, controladores y generación de informes automáticos.
-- `src/persistence/`: Módulos preparados para la futura persistencia e integración con bases de datos (SQLite).
-- `src/cli/`: Interfaz de línea de comandos (punto de entrada de la aplicación).
-- `tests/`: Batería de pruebas automatizadas configurada con `pytest`.
+LabTrack es un sistema de gestión de laboratorios diseñado con una arquitectura robusta Orientada a Objetos (POO). Su objetivo es garantizar la trazabilidad inmutable de los experimentos y gestionar los recursos (personal, muestras y equipamiento) del laboratorio.
 
-## Requisitos
-- **Python 3.9** o superior.
-- **Git** (para el control de versiones).
+---
 
-## Instalación y Configuración del Entorno
+## 1. Arquitectura Orientada a Objetos (El Dominio)
 
-1. **Clonar el repositorio:**
-   ```bash
-   git clone https://github.com/alonsovillalbapintado/Trabajo-TCA-Gestor-de-Laboratorio.git
-   cd Trabajo-TCA-Gestor-de-Laboratorio
+El sistema se divide en capas (`cli/`, `models/`, `services/`, `persistence/`, `tests/`) para separar la lógica de negocio de la interfaz. En la capa de modelos (`src/models/`), interactúan las siguientes entidades principales:
 
-## Crear el entorno virtual:
+* **`Experimento`**: Clase central que asocia un responsable, recursos y un historial de eventos.
+* **`Muestra`**: Gestiona el stock físico. Lanza excepciones (`ValueError`) si se intenta consumir más cantidad de la disponible.
+* **`Equipamiento`**: Maquinaria con estados controlados ("Disponible", "En mantenimiento").
+* **`EventoTrazabilidad`**: Entidad inmutable que captura el "cuándo" (`datetime.now()`), "quién" y "qué" de cada acción.
 
-python -m venv venv
+---
 
-## Activar el entorno virtual:
+## 2. Herencia y Polimorfismo (Núcleo PRAC2)
 
-- `En Windows (PowerShell)`:
+Para modelar al equipo de trabajo, hemos implementado una jerarquía de clases que demuestra el uso práctico de **herencia y polimorfismo**:
 
-PowerShell
+* **Superclase Abstracta:** `MiembroLaboratorio`. Define los atributos comunes (`id_miembro` mediante `uuid4`, `nombre`, `especialidad`) y un método abstracto `@abstractmethod def ejecutar_tarea()`.
+* **Subclases (Herencia):** Las clases `Investigador` y `Tecnico` heredan de `MiembroLaboratorio` y sobrescriben el método `ejecutar_tarea()` con comportamientos distintos.
+* **Polimorfismo en Acción:** La clase `Experimento` posee el método `asignar_y_ejecutar_tarea(miembro: MiembroLaboratorio)`. Este método recibe un objeto genérico y ejecuta su tarea automáticamente, demostrando un acoplamiento débil y polimorfismo puro.
 
-venv\Scripts\activate
+---
 
-- `En Linux/macOS`:
+## 3. Motor de Trazabilidad y Versionado
 
-source venv/bin/activate
+La **trazabilidad** es el pilar de LabTrack. No guardamos simples textos, sino que:
+1. Cada acción instancia un objeto `EventoTrazabilidad`.
+2. Se almacena en la lista `historial_eventos` de la clase `Experimento`.
+3. Todo queda ligado al ID único (`uuid4`) del investigador que realizó la acción.
 
-## Instalar las dependencias de desarrollo:
+**Versionado:** Para evitar que un experimento se convierta en un simple CRUD, hemos implementado el método `bifurcar_version(nueva_version)`. Mediante `copy.deepcopy()`, clona el experimento entero, generando un nuevo `id_experimento` pero preservando de forma idéntica el historial de trazabilidad anterior.
 
-pip install -e .[dev]
+---
 
-## Ejecución
+## 4. Ejemplos de Uso (Flujo de Consola CLI)
 
-Para iniciar la aplicación y acceder al menú interactivo principal, ejecuta el siguiente comando con el entorno virtual activado:
+El programa se ejecuta interactuando con la terminal (`python -m src.cli.main`). A continuación, un ejemplo real de ejecución:
 
-python -m src.cli.main
+```text
+========================================
+🔬 LABTRACK: GESTOR DE LABORATORIO 🔬
+========================================
+1. Crear nuevo Personal y Experimento
+2. Registrar evento de Trazabilidad
+3. Mostrar estado actual y Trazabilidad
 
-## Pruebas
+> Selecciona una opción: 1
+--- ALTA DE PERSONAL Y EXPERIMENTO ---
+¿Qué desea registrar? (1: Investigador / 2: Técnico): 2
+Nombre: Matías
+Especialidad/Área: Mantenimiento
+Turno (Mañana/Tarde/Noche): Mañana
 
-El proyecto cuenta con un sistema de pruebas automatizadas. Para lanzar la batería de pruebas (Smoke Tests y Unitarias):
+✅ ¡Éxito! Registrado Tecnico: Matías
+✅ Experimento 'Calibración A1' creado con ID: f82d1c9a-3b21-4f1e...tica de transparencia académica de la asignatura.
 
-pytest tests/
+5. Pruebas Automatizadas y Cobertura (Testing)
+Se ha desarrollado una batería de pruebas con pytest en tests/test_main.py evaluando:
 
-## Roadmap y Próximos Pasos
-PRAC2 (Actual): Desarrollo de las clases de dominio, implementación del sistema de eventos de trazabilidad, lógica de versionado (bifurcación) de experimentos y pruebas unitarias (cobertura > 35%).
+Pruebas de Herencia y Polimorfismo.
 
-PRAC3: Implementación de persistencia de datos mediante SQLite para el almacenamiento permanente del historial y entidades.
+Casos límite (ej. consumir el 100% exacto de una muestra).
 
-## Atribuciones
+Entradas inválidas y Excepciones (ej. rechazar consumos de muestra negativos o superiores al stock lanzando ValueError).
 
-Esta sección se mantendrá actualizada durante el ciclo de vida del proyecto para detallar el uso de asistentes de Inteligencia Artificial (ChatGPT, Gemini, Claude, etc.) o fragmentos de código de terceros, cumpliendo estrictamente con la política de transparencia académica de la asignatura.
+Escenarios alternativos y trazabilidad (ej. bifurcar experimentos vacíos).
+
+Resultados de la Ejecución de Pruebas:
+
+Comando ejecutado: python -m pytest --cov=src tests/
+
+Tests pasados: 6 / 6 exitosos.
+
+Cobertura (Coverage): El núcleo de lógica de negocio (capa models/) mantiene una cobertura del 98.5%, demostrando una alta fiabilidad en las entidades de dominio antes de afrontar la persistencia.
+
+6. Siguiente fase: Persistencia (PRAC3)
+El sistema ya está preparado para la PRAC3. Todas las entidades utilizan uuid.uuid4() para generar identificadores únicos universales, lo que garantiza una transición natural hacia claves primarias (Primary Keys) cuando integremos la base de datos SQLite en el módulo src/persistence/.
