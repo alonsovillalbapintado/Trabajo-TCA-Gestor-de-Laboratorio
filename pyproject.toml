@@ -4,14 +4,21 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "labtrack"
-version = "0.1.0"
-description = "Gestor de Laboratorio de Investigación"
-requires-python = ">=3.9"
-dependencies = []
+version = "1.0.0"
+description = "Gestor de Laboratorio de Investigación con Trazabilidad"
+authors = [
+    { name = "Grupo 2", email = "grupo2@universidad.es" }
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0"
+]
 
-[project.optional-dependencies]
-dev = [
-    "pytest>=7.0",
-    "black",
-    "ruff"
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "--cov=src"
+testpaths = [
+    "tests",
 ]
