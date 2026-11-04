@@ -4,8 +4,8 @@ from src.models.experimento import Experimento
 from src.models.muestra import Muestra
 from src.models.equipamiento import Equipamiento
 
-# Añade esta importación arriba con las demás
 from src.persistence.database import GestorBaseDatos
+from src.services.logger import get_logger
 
 def mostrar_menu():
     print("\n" + "="*40)
@@ -20,10 +20,19 @@ def mostrar_menu():
     return input("Selecciona una opción: ").strip()
 
 def ejecutar_flujo_principal():
-    # 1. Arrancamos la conexión a la base de datos
-    db = GestorBaseDatos()
+    # 1. Arrancamos el Logger
+    logger = get_logger()
+    logger.info("Iniciando aplicación LabTrack...")
+
+    # 2. Conectamos a SQLite protegidos por un bloque try/except
+    try:
+        db = GestorBaseDatos()
+        logger.info("Conexión a base de datos inicializada con éxito.")
+    except Exception as e:
+        print(f"\n❌ Error fatal al conectar con la base de datos. Detalles: {e}")
+        logger.error(f"Fallo de persistencia al arrancar: {e}")
+        sys.exit(1) # Cerramos el programa porque sin BD no podemos funcionar
     
-    # Variables para mantener los objetos en memoria durante la ejecución
     experimento_actual = None
     investigador_actual = None
 
@@ -32,28 +41,33 @@ def ejecutar_flujo_principal():
 
         if opcion == '1':
             print("\n--- ALTA DE PERSONAL Y EXPERIMENTO ---")
-            tipo_personal = input("¿Qué desea registrar? (1: Investigador / 2: Técnico): ").strip()
-            nombre = input("Nombre: ")
-            especialidad = input("Especialidad/Área: ")
+            try:
+                tipo_personal = input("¿Qué desea registrar? (1: Investigador / 2: Técnico): ").strip()
+                nombre = input("Nombre: ")
+                especialidad = input("Especialidad/Área: ")
+                
+                if tipo_personal == '2':
+                    turno = input("Turno (Mañana/Tarde/Noche): ")
+                    investigador_actual = Tecnico(nombre, especialidad, turno)
+                else:
+                    rol = input("Rol (Principal/Asistente): ") or "Principal"
+                    investigador_actual = Investigador(nombre, especialidad, rol)
+                
+                print("\n--- NUEVO EXPERIMENTO ---")
+                nombre_exp = input("Nombre del experimento: ")
+                experimento_actual = Experimento(nombre_exp, investigador_actual)
+                
+                # Intentamos guardar en la BD
+                db.guardar_experimento(experimento_actual)
+                
+                print(f"\n✅ ¡Éxito! Registrado {investigador_actual.__class__.__name__}: {investigador_actual.nombre}")
+                print(f"✅ Experimento '{experimento_actual.nombre}' persistido con ID: {experimento_actual.id_experimento}")
+                
+                logger.info(f"Nuevo experimento creado y guardado: {experimento_actual.id_experimento}")
             
-            if tipo_personal == '2':
-                turno = input("Turno (Mañana/Tarde/Noche): ")
-                # Instanciamos la subclase Tecnico
-                investigador_actual = Tecnico(nombre, especialidad, turno)
-            else:
-                rol = input("Rol (Principal/Asistente): ") or "Principal"
-                # Instanciamos la subclase Investigador
-                investigador_actual = Investigador(nombre, especialidad, rol)
-            
-            print("\n--- NUEVO EXPERIMENTO ---")
-            nombre_exp = input("Nombre del experimento: ")
-            experimento_actual = Experimento(nombre_exp, investigador_actual)
-            
-            # NUEVO: Guardamos el experimento recién creado en SQLite
-            db.guardar_experimento(experimento_actual)
-            
-            print(f"\n✅ ¡Éxito! Registrado {investigador_actual.__class__.__name__}: {investigador_actual.nombre}")
-            print(f"✅ Experimento '{experimento_actual.nombre}' creado con ID: {experimento_actual.id_experimento}")
+            except Exception as e:
+                print(f"\n❌ Ocurrió un error al crear los registros. Por favor, inténtalo de nuevo.")
+                logger.error(f"Error en Opción 1 (Creación): {e}")
 
         elif opcion == '2':
             if not experimento_actual:
@@ -65,30 +79,43 @@ def ejecutar_flujo_principal():
             print("2. Escribir descripción manual")
             sub_op = input("Selecciona opción: ").strip()
 
-            if sub_op == '1':
-                # Llamada al método polimórfico conectado a la trazabilidad
-                accion = experimento_actual.asignar_y_ejecutar_tarea(investigador_actual)
-                print(f"✅ Evento polimórfico registrado: '{accion}'")
-            else:
-                accion = input("Describe la acción realizada: ")
-                experimento_actual.registrar_evento(accion)
+            try:
+                if sub_op == '1':
+                    accion = experimento_actual.asignar_y_ejecutar_tarea(investigador_actual)
+                    print(f"✅ Evento polimórfico registrado: '{accion}'")
+                else:
+                    accion = input("Describe la acción realizada: ")
+                    experimento_actual.registrar_evento(accion)
+                    
+                # Guardamos la actualización en la BD
+                db.guardar_experimento(experimento_actual)
+                print("✅ Evento guardado correctamente en la Base de Datos.")
+                logger.info("Nuevo evento de trazabilidad persistido en SQLite.")
                 
-            # NUEVO: Actualizamos el experimento en SQLite para que guarde el nuevo evento
-            db.guardar_experimento(experimento_actual)
-            print("✅ Evento registrado en el historial y guardado en Base de Datos.")
+            except ValueError as e:
+                # Si tienes reglas de negocio (ej. falta de muestra), saltará aquí
+                print(f"\n❌ Acción denegada por regla de negocio: {e}")
+                logger.warning(f"Intento de acción denegado: {e}")
+            except Exception as e:
+                print("\n❌ Ha ocurrido un error inesperado al registrar el evento.")
+                logger.error(f"Error inesperado en Opción 2: {e}")
 
         elif opcion == '3':
             if not experimento_actual:
                 print("\n❌ Error: No hay ningún experimento activo.")
                 continue
             
-            nueva_version = input("\nIndica la nomenclatura de la nueva versión (ej. 'v1.1' o '2.0'): ")
-            # Llamamos al método real que hace la copia profunda
-            experimento_actual = experimento_actual.bifurcar_version(nueva_version)
-            
-            # NUEVO: Guardamos la nueva versión bifurcada (se creará una fila nueva en SQLite por tener otro UUID)
-            db.guardar_experimento(experimento_actual)
-            print(f"✅ Experimento bifurcado y guardado en Base de Datos. Nueva versión activa: {experimento_actual.version}")
+            try:
+                nueva_version = input("\nIndica la nomenclatura de la nueva versión (ej. 'v1.1' o '2.0'): ")
+                experimento_actual = experimento_actual.bifurcar_version(nueva_version)
+                
+                db.guardar_experimento(experimento_actual)
+                print(f"✅ Experimento bifurcado y guardado en Base de Datos. Nueva versión activa: {experimento_actual.version}")
+                logger.info(f"Experimento bifurcado a la versión {nueva_version} y persistido.")
+                
+            except Exception as e:
+                print("\n❌ Ocurrió un error al bifurcar el experimento.")
+                logger.error(f"Error en Opción 3 (Bifurcar): {e}")
 
         elif opcion == '4':
             if not experimento_actual:
@@ -106,15 +133,16 @@ def ejecutar_flujo_principal():
                 print("  (Sin eventos registrados)")
             else:
                 for evento in experimento_actual.historial_eventos:
-                    # Al imprimir el objeto 'evento', Python usa automáticamente su método __str__
                     print(f"  {evento}")
 
         elif opcion == '5':
             print("\nSaliendo de LabTrack... ¡Hasta pronto!")
+            logger.info("Cierre limpio de la aplicación por el usuario.")
             sys.exit(0)
         
         else:
             print("\n❌ Opción no válida. Inténtalo de nuevo.")
+            logger.warning(f"El usuario intentó usar una opción inválida: {opcion}")
 
 if __name__ == "__main__":
     ejecutar_flujo_principal()
