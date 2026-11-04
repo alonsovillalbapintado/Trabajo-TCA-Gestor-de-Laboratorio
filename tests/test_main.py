@@ -1,5 +1,5 @@
 import pytest
-from src.models.investigador import Investigador
+from src.models.personal import Investigador, Tecnico
 from src.models.experimento import Experimento
 from src.models.muestra import Muestra
 from src.models.equipamiento import Equipamiento
@@ -54,3 +54,48 @@ def test_bifurcar_version_experimento():
     assert exp_v2.id_experimento != exp_original.id_experimento
     # Comprobar que el historial se ha copiado correctamente
     assert len(exp_v2.historial_eventos) == 1
+
+# --- NUEVAS PRUEBAS: HERENCIA, POLIMORFISMO Y EXCEPCIONES ---
+
+def test_herencia_y_polimorfismo_personal():
+    # Creamos dos objetos de clases distintas que heredan del mismo padre
+    inv = Investigador("Alonso", "Informática", "Principal")
+    tec = Tecnico("Matías", "Mantenimiento", "Mañana")
+    
+    # Comprobamos la HERENCIA (ambos tienen el atributo id_miembro heredado)
+    assert inv.id_miembro is not None
+    assert tec.id_miembro is not None
+    
+    # Comprobamos el POLIMORFISMO (el mismo método actúa de forma diferente)
+    assert "diseñando" in inv.ejecutar_tarea()
+    assert "calibrando" in tec.ejecutar_tarea()
+
+def test_entrada_invalida_muestra():
+    # Comprobamos una ENTRADA INVÁLIDA (consumir cantidad negativa)
+    muestra = Muestra("Agua Destilada", "Solvente", 100.0, "ml")
+    with pytest.raises(ValueError):
+        muestra.consumir_cantidad(-10.0)
+
+def test_demostracion_polimorfismo_coleccion_heterogenea():
+    """
+    Demuestra polimorfismo puro procesando una lista heterogénea
+    de subclases de MiembroLaboratorio.
+    """
+    # 1. Creación de la lista heterogénea
+    equipo_trabajo = [
+        Investigador("Dra. Elena", "Genética", "Principal"),
+        Tecnico("Carlos", "Mantenimiento", "Tarde"),
+        Investigador("Dr. Mario", "Bioquímica", "Asistente")
+    ]
+    
+    # 2. Bucle polimórfico
+    resultados = []
+    for miembro in equipo_trabajo:
+        # Se invoca el mismo método en objetos de clases distintas
+        tarea = miembro.ejecutar_tarea()
+        resultados.append(tarea)
+    
+    # 3. Comprobaciones de resultados específicos por subclase
+    assert "diseñando el experimento" in resultados[0]
+    assert "calibrando el equipamiento" in resultados[1]
+    assert "diseñando el experimento" in resultados[2]
