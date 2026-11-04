@@ -105,20 +105,20 @@ El sistema de testing se ha ampliado superando ampliamente el objetivo del 55 % 
 Para que confirmes visualmente que tu repositorio está impecable antes de subirlo, esta es la estructura exacta que debes tener en Visual Studio Code:
 
 Trabajo-TCA-Gestor-de-Laboratorio/
-├── .pytest_cache/             <-- (Caché de ejecución de pytest)
-├── docs/                      <-- (Documentación HTML autogenerada)
+├── .pytest_cache/
+├── docs/
 │   ├── src/
 │   ├── index.html
 │   ├── search.js
 │   └── src.html
-├── htmlcov/                   <-- (Reporte visual web de la cobertura de código)
+├── htmlcov/
 ├── src/
-│   ├── __pycache__/           <-- (Bytecode compilado por Python para mayor velocidad)
+│   ├── __pycache__/
 │   ├── cli/
 │   │   ├── __pycache__/
 │   │   ├── __init__.py
 │   │   └── main.py
-│   ├── labtrack.egg-info/     <-- (Metadatos del empaquetado tras hacer pip install -e .)
+│   ├── labtrack.egg-info/
 │   ├── models/
 │   │   ├── __pycache__/
 │   │   ├── __init__.py
@@ -140,16 +140,10 @@ Trabajo-TCA-Gestor-de-Laboratorio/
 │   ├── test_cli.py
 │   ├── test_database.py
 │   └── test_main.py
-├── venv/                      <-- (Entorno virtual aislado con las dependencias)
-│   ├── Include/
-│   ├── Lib/
-│   ├── Scripts/
-│   ├── testing/
-│   ├── .gitignore
-│   └── pyvenv.cfg
-├── .coverage                  <-- (Archivo de datos generado por pytest-cov)
-├── .gitignore                 <-- (Reglas de exclusión para no subir basura a GitHub)
-├── labtrack_system.log        <-- (Registro invisible de sistema y errores)
-├── labtrack.db                <-- (Base de datos SQLite principal)
-├── pyproject.toml             <-- (Configuración estándar del paquete PEP 517)
-└── README.md                  <-- (Documentación global del proyecto)
+├── venv/
+├── .coverage
+├── .gitignore
+├── labtrack_system.log
+├── labtrack.db
+├── pyproject.toml
+└── README.md
