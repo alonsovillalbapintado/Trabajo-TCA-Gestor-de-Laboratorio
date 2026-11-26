@@ -2,9 +2,9 @@ name: CI - LabTrack Quality & Tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build-and-test:
@@ -25,4 +25,3 @@ jobs:
         run: ruff check src tests
       - name: Ejecutar pruebas y cobertura (Pytest)
         run: pytest --cov=src --cov-fail-under=70 tests/
-        
