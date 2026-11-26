@@ -1,33 +1,50 @@
+import sqlite3
+import pytest
 from src.persistence.database import ConexionBaseDatos
 from src.persistence.repositories import PersonalRepository, ExperimentoRepository
 from src.services.laboratorio_service import LaboratorioService
+from src.models.personal import Tecnico
 
-def test_repositorios_y_servicio_en_memoria():
-    """Valida la separación entre conexión, repositorios y capa de servicio."""
+def test_recuperacion_completa_agregado_y_polimorfismo():
+    """Verifica el ciclo completo guardar -> recuperar reconstruyendo subclase e historial ordenado."""
     db = ConexionBaseDatos(":memory:")
     personal_repo = PersonalRepository(db.conexion)
     exp_repo = ExperimentoRepository(db.conexion, personal_repo)
     servicio = LaboratorioService(exp_repo)
 
-    # 1. Flujo a través de la capa de servicio
-    inv = servicio.registrar_personal("1", "Alonso", "Informática", "Principal")
-    exp = servicio.crear_experimento("Prueba Arquitectura Limpia", inv)
-    servicio.registrar_evento(exp, inv, automatico=False, descripcion="Calibración inicial")
+    tec = servicio.registrar_personal("2", "Matías", "Instrumentación", "Noche")
+    exp = servicio.crear_experimento("Cromatografía Líquida", tec)
+    servicio.registrar_evento(exp, tec, automatico=True)
+    servicio.registrar_evento(exp, tec, automatico=False, descripcion="Ajuste de presión")
+    exp.iniciar()
+    exp_repo.guardar(exp)
 
-    # 2. Verificación directa en los repositorios
-    recuperado = personal_repo.obtener_por_id(inv.id_miembro)
+    # Recuperación desde cero a partir del ID
+    recuperado = exp_repo.obtener_por_id(exp.id_experimento)
     assert recuperado is not None
-    assert recuperado.nombre == "Alonso"
+    assert recuperado.nombre == "Cromatografía Líquida"
+    assert recuperado.estado == "En curso"
+    assert isinstance(recuperado.investigador_principal, Tecnico)
+    assert recuperado.investigador_principal.turno == "Noche"
+    assert len(recuperado.historial_eventos) == 3
+    assert recuperado.historial_eventos[1].accion == "Ajuste de presión"
 
+    db.cerrar()
+
+def test_busqueda_inexistente_y_clave_foranea():
+    """Valida respuestas ante registros inexistentes y protección de integridad referencial."""
+    db = ConexionBaseDatos(":memory:")
+    personal_repo = PersonalRepository(db.conexion)
+    exp_repo = ExperimentoRepository(db.conexion, personal_repo)
+
+    assert personal_repo.obtener_por_id("uuid-inexistente") is None
+    assert exp_repo.obtener_por_id("uuid-inexistente") is None
+
+    # Intentar insertar un experimento apuntando a un responsable no persistido debe fallar
     cursor = db.conexion.cursor()
-    cursor.execute("SELECT nombre FROM experimentos WHERE id_experimento = ?", (exp.id_experimento,))
-    assert cursor.fetchone()[0] == "Prueba Arquitectura Limpia"
-
-    cursor.execute("SELECT accion FROM trazabilidad WHERE id_experimento = ?", (exp.id_experimento,))
-    assert cursor.fetchone()[0] == "Calibración inicial"
-
-    # 3. Probar bifurcación desde el servicio
-    exp_v2 = servicio.bifurcar_experimento(exp, "2.0")
-    assert exp_v2.version == "2.0"
+    with pytest.raises(sqlite3.IntegrityError):
+        cursor.execute(
+            "INSERT INTO experimentos VALUES ('exp-1', 'Test FK', '1.0', 'En preparación', 'usuario-fantasma')"
+        )
 
     db.cerrar()
