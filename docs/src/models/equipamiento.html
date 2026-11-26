@@ -37,19 +37,34 @@
                                 <a class="function" href="#Equipamiento.__init__">Equipamiento</a>
                         </li>
                         <li>
-                                <a class="variable" href="#Equipamiento.id_equipo">id_equipo</a>
+                                <a class="variable" href="#Equipamiento.ESTADOS_VALIDOS">ESTADOS_VALIDOS</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#Equipamiento.id_equipamiento">id_equipamiento</a>
                         </li>
                         <li>
                                 <a class="variable" href="#Equipamiento.nombre">nombre</a>
                         </li>
                         <li>
+                                <a class="variable" href="#Equipamiento.limite_usos_mantenimiento">limite_usos_mantenimiento</a>
+                        </li>
+                        <li>
                                 <a class="variable" href="#Equipamiento.estado">estado</a>
                         </li>
                         <li>
-                                <a class="variable" href="#Equipamiento.historial_mantenimiento">historial_mantenimiento</a>
+                                <a class="variable" href="#Equipamiento.usos_acumulados">usos_acumulados</a>
                         </li>
                         <li>
-                                <a class="function" href="#Equipamiento.cambiar_estado">cambiar_estado</a>
+                                <a class="function" href="#Equipamiento.esta_disponible">esta_disponible</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#Equipamiento.registrar_uso">registrar_uso</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#Equipamiento.enviar_a_mantenimiento">enviar_a_mantenimiento</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#Equipamiento.completar_mantenimiento">completar_mantenimiento</a>
                         </li>
                 </ul>
 
@@ -78,14 +93,55 @@
                         <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a>
 </span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Equipamiento</span><span class="p">:</span>
-</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nombre</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">estado</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"Disponible"</span><span class="p">):</span>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">id_equipo</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
-</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">nombre</span> <span class="o">=</span> <span class="n">nombre</span>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">estado</span> <span class="o">=</span> <span class="n">estado</span>
-</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">historial_mantenimiento</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>        
-</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">cambiar_estado</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nuevo_estado</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">estado</span> <span class="o">=</span> <span class="n">nuevo_estado</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="w">    </span><span class="sd">"""Entidad de dominio con máquina de estados y control de desgaste operativo."""</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a>
+</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a>    <span class="n">ESTADOS_VALIDOS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"Disponible"</span><span class="p">,</span> <span class="s2">"En uso"</span><span class="p">,</span> <span class="s2">"En mantenimiento"</span><span class="p">,</span> <span class="s2">"Fuera de servicio"</span><span class="p">)</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a>
+</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nombre</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">estado</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"Disponible"</span><span class="p">,</span> <span class="n">limite_usos_mantenimiento</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">):</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">nombre</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">nombre</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"El nombre del equipamiento no puede estar vacío."</span><span class="p">)</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a>        <span class="k">if</span> <span class="n">estado</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ESTADOS_VALIDOS</span><span class="p">:</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Estado '</span><span class="si">{</span><span class="n">estado</span><span class="si">}</span><span class="s2">' no válido. Permitidos: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ESTADOS_VALIDOS</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>        <span class="k">if</span> <span class="n">limite_usos_mantenimiento</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"El límite de usos para mantenimiento debe ser mayor que cero."</span><span class="p">)</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">id_equipamiento</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">nombre</span> <span class="o">=</span> <span class="n">nombre</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span> <span class="o">=</span> <span class="n">estado</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_usos_acumulados</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">limite_usos_mantenimiento</span> <span class="o">=</span> <span class="n">limite_usos_mantenimiento</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>    <span class="nd">@property</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">estado</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>    <span class="nd">@property</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">usos_acumulados</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_usos_acumulados</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>
+</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">esta_disponible</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span> <span class="o">==</span> <span class="s2">"Disponible"</span>
+</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>
+</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">registrar_uso</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a><span class="w">        </span><span class="sd">"""Aplica la regla de negocio: solo equipos disponibles pueden usarse y se bloquean al alcanzar su límite."""</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">esta_disponible</span><span class="p">():</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"El equipo '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">' no puede utilizarse (estado actual: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_estado</span><span class="si">}</span><span class="s2">)."</span><span class="p">)</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>
+</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_usos_acumulados</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_usos_acumulados</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">limite_usos_mantenimiento</span><span class="p">:</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span> <span class="o">=</span> <span class="s2">"En mantenimiento"</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a>
+</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">enviar_a_mantenimiento</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span> <span class="o">==</span> <span class="s2">"En mantenimiento"</span><span class="p">:</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"El equipo '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">' ya se encuentra en mantenimiento."</span><span class="p">)</span>
+</span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span> <span class="o">=</span> <span class="s2">"En mantenimiento"</span>
+</span><span id="L-46"><a href="#L-46"><span class="linenos">46</span></a>
+</span><span id="L-47"><a href="#L-47"><span class="linenos">47</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">completar_mantenimiento</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-48"><a href="#L-48"><span class="linenos">48</span></a><span class="w">        </span><span class="sd">"""Restaura la operatividad del equipo y reinicia su contador de desgaste."""</span>
+</span><span id="L-49"><a href="#L-49"><span class="linenos">49</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span> <span class="o">!=</span> <span class="s2">"En mantenimiento"</span><span class="p">:</span>
+</span><span id="L-50"><a href="#L-50"><span class="linenos">50</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"El equipo '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">' no está en mantenimiento."</span><span class="p">)</span>
+</span><span id="L-51"><a href="#L-51"><span class="linenos">51</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_usos_acumulados</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="L-52"><a href="#L-52"><span class="linenos">52</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span> <span class="o">=</span> <span class="s2">"Disponible"</span>
 </span></pre></div>
 
 
@@ -102,47 +158,110 @@
     </div>
     <a class="headerlink" href="#Equipamiento"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="Equipamiento-4"><a href="#Equipamiento-4"><span class="linenos"> 4</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Equipamiento</span><span class="p">:</span>
-</span><span id="Equipamiento-5"><a href="#Equipamiento-5"><span class="linenos"> 5</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nombre</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">estado</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"Disponible"</span><span class="p">):</span>
-</span><span id="Equipamiento-6"><a href="#Equipamiento-6"><span class="linenos"> 6</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">id_equipo</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
-</span><span id="Equipamiento-7"><a href="#Equipamiento-7"><span class="linenos"> 7</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">nombre</span> <span class="o">=</span> <span class="n">nombre</span>
-</span><span id="Equipamiento-8"><a href="#Equipamiento-8"><span class="linenos"> 8</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">estado</span> <span class="o">=</span> <span class="n">estado</span>
-</span><span id="Equipamiento-9"><a href="#Equipamiento-9"><span class="linenos"> 9</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">historial_mantenimiento</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span id="Equipamiento-10"><a href="#Equipamiento-10"><span class="linenos">10</span></a>        
-</span><span id="Equipamiento-11"><a href="#Equipamiento-11"><span class="linenos">11</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">cambiar_estado</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nuevo_estado</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-</span><span id="Equipamiento-12"><a href="#Equipamiento-12"><span class="linenos">12</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">estado</span> <span class="o">=</span> <span class="n">nuevo_estado</span>
+</span><span id="Equipamiento-5"><a href="#Equipamiento-5"><span class="linenos"> 5</span></a><span class="w">    </span><span class="sd">"""Entidad de dominio con máquina de estados y control de desgaste operativo."""</span>
+</span><span id="Equipamiento-6"><a href="#Equipamiento-6"><span class="linenos"> 6</span></a>
+</span><span id="Equipamiento-7"><a href="#Equipamiento-7"><span class="linenos"> 7</span></a>    <span class="n">ESTADOS_VALIDOS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"Disponible"</span><span class="p">,</span> <span class="s2">"En uso"</span><span class="p">,</span> <span class="s2">"En mantenimiento"</span><span class="p">,</span> <span class="s2">"Fuera de servicio"</span><span class="p">)</span>
+</span><span id="Equipamiento-8"><a href="#Equipamiento-8"><span class="linenos"> 8</span></a>
+</span><span id="Equipamiento-9"><a href="#Equipamiento-9"><span class="linenos"> 9</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nombre</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">estado</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"Disponible"</span><span class="p">,</span> <span class="n">limite_usos_mantenimiento</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">):</span>
+</span><span id="Equipamiento-10"><a href="#Equipamiento-10"><span class="linenos">10</span></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">nombre</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">nombre</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+</span><span id="Equipamiento-11"><a href="#Equipamiento-11"><span class="linenos">11</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"El nombre del equipamiento no puede estar vacío."</span><span class="p">)</span>
+</span><span id="Equipamiento-12"><a href="#Equipamiento-12"><span class="linenos">12</span></a>        <span class="k">if</span> <span class="n">estado</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ESTADOS_VALIDOS</span><span class="p">:</span>
+</span><span id="Equipamiento-13"><a href="#Equipamiento-13"><span class="linenos">13</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Estado '</span><span class="si">{</span><span class="n">estado</span><span class="si">}</span><span class="s2">' no válido. Permitidos: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ESTADOS_VALIDOS</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="Equipamiento-14"><a href="#Equipamiento-14"><span class="linenos">14</span></a>        <span class="k">if</span> <span class="n">limite_usos_mantenimiento</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+</span><span id="Equipamiento-15"><a href="#Equipamiento-15"><span class="linenos">15</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"El límite de usos para mantenimiento debe ser mayor que cero."</span><span class="p">)</span>
+</span><span id="Equipamiento-16"><a href="#Equipamiento-16"><span class="linenos">16</span></a>
+</span><span id="Equipamiento-17"><a href="#Equipamiento-17"><span class="linenos">17</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">id_equipamiento</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+</span><span id="Equipamiento-18"><a href="#Equipamiento-18"><span class="linenos">18</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">nombre</span> <span class="o">=</span> <span class="n">nombre</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</span><span id="Equipamiento-19"><a href="#Equipamiento-19"><span class="linenos">19</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span> <span class="o">=</span> <span class="n">estado</span>
+</span><span id="Equipamiento-20"><a href="#Equipamiento-20"><span class="linenos">20</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_usos_acumulados</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="Equipamiento-21"><a href="#Equipamiento-21"><span class="linenos">21</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">limite_usos_mantenimiento</span> <span class="o">=</span> <span class="n">limite_usos_mantenimiento</span>
+</span><span id="Equipamiento-22"><a href="#Equipamiento-22"><span class="linenos">22</span></a>
+</span><span id="Equipamiento-23"><a href="#Equipamiento-23"><span class="linenos">23</span></a>    <span class="nd">@property</span>
+</span><span id="Equipamiento-24"><a href="#Equipamiento-24"><span class="linenos">24</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">estado</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="Equipamiento-25"><a href="#Equipamiento-25"><span class="linenos">25</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span>
+</span><span id="Equipamiento-26"><a href="#Equipamiento-26"><span class="linenos">26</span></a>
+</span><span id="Equipamiento-27"><a href="#Equipamiento-27"><span class="linenos">27</span></a>    <span class="nd">@property</span>
+</span><span id="Equipamiento-28"><a href="#Equipamiento-28"><span class="linenos">28</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">usos_acumulados</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span id="Equipamiento-29"><a href="#Equipamiento-29"><span class="linenos">29</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_usos_acumulados</span>
+</span><span id="Equipamiento-30"><a href="#Equipamiento-30"><span class="linenos">30</span></a>
+</span><span id="Equipamiento-31"><a href="#Equipamiento-31"><span class="linenos">31</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">esta_disponible</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="Equipamiento-32"><a href="#Equipamiento-32"><span class="linenos">32</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span> <span class="o">==</span> <span class="s2">"Disponible"</span>
+</span><span id="Equipamiento-33"><a href="#Equipamiento-33"><span class="linenos">33</span></a>
+</span><span id="Equipamiento-34"><a href="#Equipamiento-34"><span class="linenos">34</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">registrar_uso</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Equipamiento-35"><a href="#Equipamiento-35"><span class="linenos">35</span></a><span class="w">        </span><span class="sd">"""Aplica la regla de negocio: solo equipos disponibles pueden usarse y se bloquean al alcanzar su límite."""</span>
+</span><span id="Equipamiento-36"><a href="#Equipamiento-36"><span class="linenos">36</span></a>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">esta_disponible</span><span class="p">():</span>
+</span><span id="Equipamiento-37"><a href="#Equipamiento-37"><span class="linenos">37</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"El equipo '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">' no puede utilizarse (estado actual: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_estado</span><span class="si">}</span><span class="s2">)."</span><span class="p">)</span>
+</span><span id="Equipamiento-38"><a href="#Equipamiento-38"><span class="linenos">38</span></a>
+</span><span id="Equipamiento-39"><a href="#Equipamiento-39"><span class="linenos">39</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_usos_acumulados</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span id="Equipamiento-40"><a href="#Equipamiento-40"><span class="linenos">40</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_usos_acumulados</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">limite_usos_mantenimiento</span><span class="p">:</span>
+</span><span id="Equipamiento-41"><a href="#Equipamiento-41"><span class="linenos">41</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span> <span class="o">=</span> <span class="s2">"En mantenimiento"</span>
+</span><span id="Equipamiento-42"><a href="#Equipamiento-42"><span class="linenos">42</span></a>
+</span><span id="Equipamiento-43"><a href="#Equipamiento-43"><span class="linenos">43</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">enviar_a_mantenimiento</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Equipamiento-44"><a href="#Equipamiento-44"><span class="linenos">44</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span> <span class="o">==</span> <span class="s2">"En mantenimiento"</span><span class="p">:</span>
+</span><span id="Equipamiento-45"><a href="#Equipamiento-45"><span class="linenos">45</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"El equipo '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">' ya se encuentra en mantenimiento."</span><span class="p">)</span>
+</span><span id="Equipamiento-46"><a href="#Equipamiento-46"><span class="linenos">46</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span> <span class="o">=</span> <span class="s2">"En mantenimiento"</span>
+</span><span id="Equipamiento-47"><a href="#Equipamiento-47"><span class="linenos">47</span></a>
+</span><span id="Equipamiento-48"><a href="#Equipamiento-48"><span class="linenos">48</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">completar_mantenimiento</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Equipamiento-49"><a href="#Equipamiento-49"><span class="linenos">49</span></a><span class="w">        </span><span class="sd">"""Restaura la operatividad del equipo y reinicia su contador de desgaste."""</span>
+</span><span id="Equipamiento-50"><a href="#Equipamiento-50"><span class="linenos">50</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span> <span class="o">!=</span> <span class="s2">"En mantenimiento"</span><span class="p">:</span>
+</span><span id="Equipamiento-51"><a href="#Equipamiento-51"><span class="linenos">51</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"El equipo '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">' no está en mantenimiento."</span><span class="p">)</span>
+</span><span id="Equipamiento-52"><a href="#Equipamiento-52"><span class="linenos">52</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_usos_acumulados</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="Equipamiento-53"><a href="#Equipamiento-53"><span class="linenos">53</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span> <span class="o">=</span> <span class="s2">"Disponible"</span>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Entidad de dominio con máquina de estados y control de desgaste operativo.</p>
+</div>
+
 
                             <div id="Equipamiento.__init__" class="classattr">
                                         <input id="Equipamiento.__init__-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
             
-        <span class="name">Equipamiento</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">nombre</span><span class="p">:</span> <span class="nb">str</span>, </span><span class="param"><span class="n">estado</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'Disponible'</span></span>)</span>
+        <span class="name">Equipamiento</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">nombre</span><span class="p">:</span> <span class="nb">str</span>,</span><span class="param">	<span class="n">estado</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'Disponible'</span>,</span><span class="param">	<span class="n">limite_usos_mantenimiento</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span></span>)</span>
 
                 <label class="view-source-button" for="Equipamiento.__init__-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#Equipamiento.__init__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Equipamiento.__init__-5"><a href="#Equipamiento.__init__-5"><span class="linenos">5</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nombre</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">estado</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"Disponible"</span><span class="p">):</span>
-</span><span id="Equipamiento.__init__-6"><a href="#Equipamiento.__init__-6"><span class="linenos">6</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">id_equipo</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
-</span><span id="Equipamiento.__init__-7"><a href="#Equipamiento.__init__-7"><span class="linenos">7</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">nombre</span> <span class="o">=</span> <span class="n">nombre</span>
-</span><span id="Equipamiento.__init__-8"><a href="#Equipamiento.__init__-8"><span class="linenos">8</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">estado</span> <span class="o">=</span> <span class="n">estado</span>
-</span><span id="Equipamiento.__init__-9"><a href="#Equipamiento.__init__-9"><span class="linenos">9</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">historial_mantenimiento</span> <span class="o">=</span> <span class="p">[]</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Equipamiento.__init__-9"><a href="#Equipamiento.__init__-9"><span class="linenos"> 9</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nombre</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">estado</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"Disponible"</span><span class="p">,</span> <span class="n">limite_usos_mantenimiento</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">):</span>
+</span><span id="Equipamiento.__init__-10"><a href="#Equipamiento.__init__-10"><span class="linenos">10</span></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">nombre</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">nombre</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+</span><span id="Equipamiento.__init__-11"><a href="#Equipamiento.__init__-11"><span class="linenos">11</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"El nombre del equipamiento no puede estar vacío."</span><span class="p">)</span>
+</span><span id="Equipamiento.__init__-12"><a href="#Equipamiento.__init__-12"><span class="linenos">12</span></a>        <span class="k">if</span> <span class="n">estado</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ESTADOS_VALIDOS</span><span class="p">:</span>
+</span><span id="Equipamiento.__init__-13"><a href="#Equipamiento.__init__-13"><span class="linenos">13</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Estado '</span><span class="si">{</span><span class="n">estado</span><span class="si">}</span><span class="s2">' no válido. Permitidos: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ESTADOS_VALIDOS</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="Equipamiento.__init__-14"><a href="#Equipamiento.__init__-14"><span class="linenos">14</span></a>        <span class="k">if</span> <span class="n">limite_usos_mantenimiento</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+</span><span id="Equipamiento.__init__-15"><a href="#Equipamiento.__init__-15"><span class="linenos">15</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"El límite de usos para mantenimiento debe ser mayor que cero."</span><span class="p">)</span>
+</span><span id="Equipamiento.__init__-16"><a href="#Equipamiento.__init__-16"><span class="linenos">16</span></a>
+</span><span id="Equipamiento.__init__-17"><a href="#Equipamiento.__init__-17"><span class="linenos">17</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">id_equipamiento</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+</span><span id="Equipamiento.__init__-18"><a href="#Equipamiento.__init__-18"><span class="linenos">18</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">nombre</span> <span class="o">=</span> <span class="n">nombre</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</span><span id="Equipamiento.__init__-19"><a href="#Equipamiento.__init__-19"><span class="linenos">19</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span> <span class="o">=</span> <span class="n">estado</span>
+</span><span id="Equipamiento.__init__-20"><a href="#Equipamiento.__init__-20"><span class="linenos">20</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_usos_acumulados</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="Equipamiento.__init__-21"><a href="#Equipamiento.__init__-21"><span class="linenos">21</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">limite_usos_mantenimiento</span> <span class="o">=</span> <span class="n">limite_usos_mantenimiento</span>
 </span></pre></div>
 
 
     
 
                             </div>
-                            <div id="Equipamiento.id_equipo" class="classattr">
+                            <div id="Equipamiento.ESTADOS_VALIDOS" class="classattr">
                                 <div class="attr variable">
-            <span class="name">id_equipo</span>
+            <span class="name">ESTADOS_VALIDOS</span>        =
+<span class="default_value">(&#39;Disponible&#39;, &#39;En uso&#39;, &#39;En mantenimiento&#39;, &#39;Fuera de servicio&#39;)</span>
 
         
     </div>
-    <a class="headerlink" href="#Equipamiento.id_equipo"></a>
+    <a class="headerlink" href="#Equipamiento.ESTADOS_VALIDOS"></a>
+    
+    
+
+                            </div>
+                            <div id="Equipamiento.id_equipamiento" class="classattr">
+                                <div class="attr variable">
+            <span class="name">id_equipamiento</span>
+
+        
+    </div>
+    <a class="headerlink" href="#Equipamiento.id_equipamiento"></a>
     
     
 
@@ -158,45 +277,143 @@
     
 
                             </div>
-                            <div id="Equipamiento.estado" class="classattr">
+                            <div id="Equipamiento.limite_usos_mantenimiento" class="classattr">
                                 <div class="attr variable">
-            <span class="name">estado</span>
+            <span class="name">limite_usos_mantenimiento</span>
 
         
+    </div>
+    <a class="headerlink" href="#Equipamiento.limite_usos_mantenimiento"></a>
+    
+    
+
+                            </div>
+                            <div id="Equipamiento.estado" class="classattr">
+                                        <input id="Equipamiento.estado-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr variable">
+            <span class="name">estado</span><span class="annotation">: str</span>
+
+                <label class="view-source-button" for="Equipamiento.estado-view-source"><span>View Source</span></label>
+
     </div>
     <a class="headerlink" href="#Equipamiento.estado"></a>
-    
-    
-
-                            </div>
-                            <div id="Equipamiento.historial_mantenimiento" class="classattr">
-                                <div class="attr variable">
-            <span class="name">historial_mantenimiento</span>
-
-        
-    </div>
-    <a class="headerlink" href="#Equipamiento.historial_mantenimiento"></a>
-    
-    
-
-                            </div>
-                            <div id="Equipamiento.cambiar_estado" class="classattr">
-                                        <input id="Equipamiento.cambiar_estado-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">cambiar_estado</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">nuevo_estado</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">):</span></span>
-
-                <label class="view-source-button" for="Equipamiento.cambiar_estado-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#Equipamiento.cambiar_estado"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Equipamiento.cambiar_estado-11"><a href="#Equipamiento.cambiar_estado-11"><span class="linenos">11</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">cambiar_estado</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nuevo_estado</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-</span><span id="Equipamiento.cambiar_estado-12"><a href="#Equipamiento.cambiar_estado-12"><span class="linenos">12</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">estado</span> <span class="o">=</span> <span class="n">nuevo_estado</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Equipamiento.estado-23"><a href="#Equipamiento.estado-23"><span class="linenos">23</span></a>    <span class="nd">@property</span>
+</span><span id="Equipamiento.estado-24"><a href="#Equipamiento.estado-24"><span class="linenos">24</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">estado</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="Equipamiento.estado-25"><a href="#Equipamiento.estado-25"><span class="linenos">25</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span>
 </span></pre></div>
 
 
     
+
+                            </div>
+                            <div id="Equipamiento.usos_acumulados" class="classattr">
+                                        <input id="Equipamiento.usos_acumulados-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr variable">
+            <span class="name">usos_acumulados</span><span class="annotation">: int</span>
+
+                <label class="view-source-button" for="Equipamiento.usos_acumulados-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#Equipamiento.usos_acumulados"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Equipamiento.usos_acumulados-27"><a href="#Equipamiento.usos_acumulados-27"><span class="linenos">27</span></a>    <span class="nd">@property</span>
+</span><span id="Equipamiento.usos_acumulados-28"><a href="#Equipamiento.usos_acumulados-28"><span class="linenos">28</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">usos_acumulados</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span id="Equipamiento.usos_acumulados-29"><a href="#Equipamiento.usos_acumulados-29"><span class="linenos">29</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_usos_acumulados</span>
+</span></pre></div>
+
+
+    
+
+                            </div>
+                            <div id="Equipamiento.esta_disponible" class="classattr">
+                                        <input id="Equipamiento.esta_disponible-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">esta_disponible</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="nb">bool</span>:</span></span>
+
+                <label class="view-source-button" for="Equipamiento.esta_disponible-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#Equipamiento.esta_disponible"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Equipamiento.esta_disponible-31"><a href="#Equipamiento.esta_disponible-31"><span class="linenos">31</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">esta_disponible</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="Equipamiento.esta_disponible-32"><a href="#Equipamiento.esta_disponible-32"><span class="linenos">32</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span> <span class="o">==</span> <span class="s2">"Disponible"</span>
+</span></pre></div>
+
+
+    
+
+                            </div>
+                            <div id="Equipamiento.registrar_uso" class="classattr">
+                                        <input id="Equipamiento.registrar_uso-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">registrar_uso</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">):</span></span>
+
+                <label class="view-source-button" for="Equipamiento.registrar_uso-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#Equipamiento.registrar_uso"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Equipamiento.registrar_uso-34"><a href="#Equipamiento.registrar_uso-34"><span class="linenos">34</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">registrar_uso</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Equipamiento.registrar_uso-35"><a href="#Equipamiento.registrar_uso-35"><span class="linenos">35</span></a><span class="w">        </span><span class="sd">"""Aplica la regla de negocio: solo equipos disponibles pueden usarse y se bloquean al alcanzar su límite."""</span>
+</span><span id="Equipamiento.registrar_uso-36"><a href="#Equipamiento.registrar_uso-36"><span class="linenos">36</span></a>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">esta_disponible</span><span class="p">():</span>
+</span><span id="Equipamiento.registrar_uso-37"><a href="#Equipamiento.registrar_uso-37"><span class="linenos">37</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"El equipo '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">' no puede utilizarse (estado actual: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_estado</span><span class="si">}</span><span class="s2">)."</span><span class="p">)</span>
+</span><span id="Equipamiento.registrar_uso-38"><a href="#Equipamiento.registrar_uso-38"><span class="linenos">38</span></a>
+</span><span id="Equipamiento.registrar_uso-39"><a href="#Equipamiento.registrar_uso-39"><span class="linenos">39</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_usos_acumulados</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span id="Equipamiento.registrar_uso-40"><a href="#Equipamiento.registrar_uso-40"><span class="linenos">40</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_usos_acumulados</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">limite_usos_mantenimiento</span><span class="p">:</span>
+</span><span id="Equipamiento.registrar_uso-41"><a href="#Equipamiento.registrar_uso-41"><span class="linenos">41</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span> <span class="o">=</span> <span class="s2">"En mantenimiento"</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Aplica la regla de negocio: solo equipos disponibles pueden usarse y se bloquean al alcanzar su límite.</p>
+</div>
+
+
+                            </div>
+                            <div id="Equipamiento.enviar_a_mantenimiento" class="classattr">
+                                        <input id="Equipamiento.enviar_a_mantenimiento-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">enviar_a_mantenimiento</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">):</span></span>
+
+                <label class="view-source-button" for="Equipamiento.enviar_a_mantenimiento-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#Equipamiento.enviar_a_mantenimiento"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Equipamiento.enviar_a_mantenimiento-43"><a href="#Equipamiento.enviar_a_mantenimiento-43"><span class="linenos">43</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">enviar_a_mantenimiento</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Equipamiento.enviar_a_mantenimiento-44"><a href="#Equipamiento.enviar_a_mantenimiento-44"><span class="linenos">44</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span> <span class="o">==</span> <span class="s2">"En mantenimiento"</span><span class="p">:</span>
+</span><span id="Equipamiento.enviar_a_mantenimiento-45"><a href="#Equipamiento.enviar_a_mantenimiento-45"><span class="linenos">45</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"El equipo '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">' ya se encuentra en mantenimiento."</span><span class="p">)</span>
+</span><span id="Equipamiento.enviar_a_mantenimiento-46"><a href="#Equipamiento.enviar_a_mantenimiento-46"><span class="linenos">46</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span> <span class="o">=</span> <span class="s2">"En mantenimiento"</span>
+</span></pre></div>
+
+
+    
+
+                            </div>
+                            <div id="Equipamiento.completar_mantenimiento" class="classattr">
+                                        <input id="Equipamiento.completar_mantenimiento-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">completar_mantenimiento</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">):</span></span>
+
+                <label class="view-source-button" for="Equipamiento.completar_mantenimiento-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#Equipamiento.completar_mantenimiento"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Equipamiento.completar_mantenimiento-48"><a href="#Equipamiento.completar_mantenimiento-48"><span class="linenos">48</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">completar_mantenimiento</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Equipamiento.completar_mantenimiento-49"><a href="#Equipamiento.completar_mantenimiento-49"><span class="linenos">49</span></a><span class="w">        </span><span class="sd">"""Restaura la operatividad del equipo y reinicia su contador de desgaste."""</span>
+</span><span id="Equipamiento.completar_mantenimiento-50"><a href="#Equipamiento.completar_mantenimiento-50"><span class="linenos">50</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span> <span class="o">!=</span> <span class="s2">"En mantenimiento"</span><span class="p">:</span>
+</span><span id="Equipamiento.completar_mantenimiento-51"><a href="#Equipamiento.completar_mantenimiento-51"><span class="linenos">51</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"El equipo '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">' no está en mantenimiento."</span><span class="p">)</span>
+</span><span id="Equipamiento.completar_mantenimiento-52"><a href="#Equipamiento.completar_mantenimiento-52"><span class="linenos">52</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_usos_acumulados</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="Equipamiento.completar_mantenimiento-53"><a href="#Equipamiento.completar_mantenimiento-53"><span class="linenos">53</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_estado</span> <span class="o">=</span> <span class="s2">"Disponible"</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Restaura la operatividad del equipo y reinicia su contador de desgaste.</p>
+</div>
+
 
                             </div>
                 </section>
