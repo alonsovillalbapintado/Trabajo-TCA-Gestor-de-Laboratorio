@@ -50,7 +50,8 @@ def test_escenario_alternativo_bifurcar_sin_eventos():
     exp_v2 = exp.bifurcar_version("2.0")
     
     assert exp_v2.version == "2.0"
-    assert len(exp_v2.historial_eventos) == 0
+    assert len(exp_v2.historial_eventos) == 1
+    assert "Bifurcación creada" in exp_v2.historial_eventos[0].accion
     assert exp_v2.id_experimento != exp.id_experimento
 
 def test_trazabilidad_con_polimorfismo():
