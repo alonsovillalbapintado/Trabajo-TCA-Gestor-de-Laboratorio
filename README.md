@@ -2,45 +2,68 @@
 
 **Grupo 2**  
 **Integrantes:** Matías Mayor, Alonso Villalba Pintado, Antonio Hermana Rubio  
-**Asignatura:** Técnicas de Programación Avanzada 
+**Asignatura:** Técnicas de Programación Avanzada (PRAC2 y PRAC3)  
 
-LabTrack es un sistema de gestión de laboratorios diseñado con una arquitectura robusta Orientada a Objetos (POO). Su objetivo es garantizar la trazabilidad inmutable de los experimentos y gestionar los recursos (personal, muestras y equipamiento) del laboratorio.
+LabTrack es un sistema de gestión de laboratorios de investigación desarrollado en Python bajo una **arquitectura en capas** y principios de **Diseño Orientado a Objetos (POO)**. Garantiza la trazabilidad inmutable de los experimentos mediante persistencia relacional en SQLite, protege las reglas de negocio dentro de las entidades del dominio y desacopla completamente la interfaz de consola del acceso a datos.
 
 ---
 
 ## 📖 GUÍA DE USUARIO
 
-Esta sección explica cómo instalar, configurar y utilizar LabTrack en tu entorno local.
+Esta sección detalla cómo instalar, ejecutar y utilizar LabTrack en tu entorno local.
 
-### 1. Requisitos e Instalación
-El proyecto está estructurado como un paquete instalable de Python moderno siguiendo las especificaciones PEP 517 y PEP 621.
-1. Requiere Python 3.10 o superior.
-2. Clona el repositorio y crea un entorno virtual (`python -m venv venv`).
-3. Activa el entorno y configura el paquete y sus dependencias (`pytest`, `pytest-cov`) ejecutando:
-   pip install -e .
+### 1. Requisitos e Instalación (PEP 517 / PEP 621)
+El proyecto está empaquetado siguiendo los estándares modernos **PEP 517** y **PEP 621** (`pyproject.toml`), separando estrictamente las dependencias de ejecución (*runtime*) de las herramientas de desarrollo y pruebas (*dev*):
 
-2. Ejecución del Programa
-El sistema está diseñado para ejecutarse interpretando el módulo principal. Estando en la raíz del proyecto y con el entorno virtual activado, la ejecución correcta es:   
+1. Requiere **Python 3.10 o superior**.
+2. Clona el repositorio, crea un entorno virtual y actívalo:
+   ```bash
+   python -m venv venv
+   # En Windows (PowerShell):
+   .\venv\Scripts\activate
+   # En Linux/macOS:
+   source venv/bin/activate
+   ```
+3. Instala el paquete según el perfil de uso:
+   * **Instalación estándar (Usuario final / Ejecución):** instala únicamente la aplicación limpia, sin descargar librerías de testing, ya que todo el núcleo funciona con la biblioteca estándar de Python (`sqlite3`, `uuid`, `logging`, `abc`, `datetime`):
+     ```bash
+     python -m pip install -e .
+     ```
+   * **Instalación para desarrollo y auditoría de pruebas:** instala la aplicación junto con el grupo opcional `dev` (`pytest` y `pytest-cov`):
+     ```bash
+     python -m pip install -e ".[dev]"
+     ```
 
-python -m src.cli.main
+### 2. Ejecución del Programa y de la Suite de Pruebas
+Desde la raíz del proyecto (`Trabajo-TCA-Gestor-de-Laboratorio/`) y con el entorno virtual activado:
+
+* **Iniciar la aplicación interactiva (CLI):**
+  ```bash
+  python -m src.cli.main
+  ```
+* **Ejecutar todas las pruebas automatizadas con reporte de cobertura:**
+  ```bash
+  python -m pytest --cov=src tests/
+  ```
 
 ### 3. Ejemplos Completos de Ejecución (Interacción entre Capas)
 
-A continuación se muestran tres escenarios completos que ilustran el flujo de datos de extremo a extremo: desde la interfaz de consola hasta la persistencia relacional y los registros de auditoría.
+A continuación se muestran tres escenarios completos que permiten visualizar cómo colaboran la interfaz de usuario, el servicio de aplicación, las reglas de negocio del dominio, la base de datos SQLite y el registro de auditoría.
 
-#### Escenario A: Sesión Completa en Consola (Alta, Polimorfismo, Bifurcación y Consulta)
-Ejecutando `python -m src.cli.main`, el usuario interactúa con la capa `cli/`, que delega cada operación en `LaboratorioService` y persiste automáticamente los cambios mediante los repositorios:
+#### Escenario A: Sesión Completa en Consola (`python -m src.cli.main`)
+Muestra el flujo real de un usuario creando personal y un experimento, ejecutando una tarea polimórfica, bifurcando una versión, consultando el historial y recuperando experimentos persistidos:
 
 ```text
-========================================
+==========================================
 🔬 LABTRACK: GESTOR DE LABORATORIO 🔬
-========================================
+==========================================
 1. Crear nuevo Personal y Experimento
 2. Registrar evento de Trazabilidad
 3. Bifurcar Experimento (Crear nueva versión)
 4. Mostrar estado actual y Trazabilidad
-5. Salir
-========================================
+5. Recuperar Experimento existente por ID
+6. Salir
+==========================================
 Selecciona una opción: 1
 
 --- ALTA DE PERSONAL Y EXPERIMENTO ---
@@ -48,66 +71,58 @@ Selecciona una opción: 1
 Nombre: Matías
 Especialidad/Área: Instrumentación
 Turno (Mañana/Tarde/Noche): Mañana
-
---- NUEVO EXPERIMENTO ---
 Nombre del experimento: Espectroscopía UV-Vis
 
 ✅ ¡Éxito! Registrado Tecnico: Matías
 ✅ Experimento 'Espectroscopía UV-Vis' persistido con ID: 082aecab-46f7-427b-b990-48e0f8121269
 
-========================================
+==========================================
 Selecciona una opción: 2
 
 --- REGISTRAR ACCIÓN POLIMÓRFICA ---
 1. Ejecutar tarea automática según el perfil de personal
 2. Escribir descripción manual
 Selecciona opción: 1
-✅ Evento polimórfico registrado: 'Calibración instrumental y preparación de reactivos por Matías (Turno: Mañana)'
+✅ Evento polimórfico registrado: 'Técnico Matías (Turno: Mañana) calibrando instrumental y preparando reactivos'
 
-========================================
+==========================================
 Selecciona una opción: 3
 
 Indica la nomenclatura de la nueva versión (ej. 'v1.1' o '2.0'): v2.0
 ✅ Experimento bifurcado y guardado. Nueva versión activa: v2.0
 
-========================================
+==========================================
 Selecciona una opción: 4
 
 --- ESTADO DEL EXPERIMENTO ---
+ID:           9f1c3e20-8a11-4c9d-a012-77b1e4d90012
 Nombre:       Espectroscopía UV-Vis
 Versión:      v2.0
 Responsable:  Matías (Instrumentación)
 Estado:       En preparación
 
 --- HISTORIAL DE TRAZABILIDAD ---
-  [2026-11-26 17:15:10] (Usuario: 6614259d-f723-4bdf-b78d-42fc103c1a9f) -> Calibración instrumental y preparación de reactivos por Matías (Turno: Mañana)
+  [2026-11-26 17:15:10] (Usuario: 6614259d-f723-4bdf-b78d-42fc103c1a9f) -> Técnico Matías (Turno: Mañana) calibrando instrumental y preparando reactivos
   [2026-11-26 17:15:24] (Usuario: 6614259d-f723-4bdf-b78d-42fc103c1a9f) -> Bifurcación creada desde versión 1.0 -> v2.0
 
-========================================
-Selecciona una opción: 5
+==========================================
+Selecciona una opción: 6
 
 Saliendo de LabTrack... ¡Hasta pronto!
 ```
 
----
-
-#### Escenario B: Colaboración entre Dominio Rico, Servicio y Persistencia
-El siguiente flujo muestra cómo las entidades de `src/models/` protegen sus invariantes de negocio (ciclo de vida, permisos por rol, desgaste de equipos y umbral crítico de muestras) mientras `LaboratorioService` sincroniza el estado en SQLite:
+#### Escenario B: Interacción entre Dominio Rico, Servicio y Persistencia
+Ilustra cómo las entidades de `src/models/` protegen sus invariantes de negocio (ciclo de vida, desgaste de equipamiento, alertas críticas de stock y permisos por rol) mientras `LaboratorioService` coordina los repositorios:
 
 ```python
-from src.persistence.database import ConexionBaseDatos
-from src.persistence.repositories import PersonalRepository, ExperimentoRepository
 from src.services.laboratorio_service import LaboratorioService
 from src.models.equipamiento import Equipamiento
 from src.models.muestra import Muestra
 
-# 1. Inicialización de infraestructura e inyección de dependencias
-db = ConexionBaseDatos("labtrack.db")
-personal_repo = PersonalRepository(db.conexion)
-experimento_repo = ExperimentoRepository(db.conexion, personal_repo)
-servicio = LaboratorioService(experimento_repo)
+# 1. Inicialización de infraestructura mediante fábrica del servicio (desacoplada de SQLite)
+servicio = LaboratorioService.crear_desde_sqlite("labtrack.db")
 
-# 2. Creación de actores y agregado raíz mediante el servicio
+# 2. Alta de perfiles polimórficos y creación del agregado raíz
 investigador = servicio.registrar_personal("1", "Alonso", "Bioinformática", "Principal")
 tecnico = servicio.registrar_personal("2", "Matías", "Instrumentación", "Mañana")
 experimento = servicio.crear_experimento("Secuenciación Genómica", investigador)
@@ -128,23 +143,20 @@ except ValueError as err:
     print(f"Regla de negocio aplicada: {err}")
 
 experimento.finalizar(investigador)  # Aceptado: estado -> 'Finalizado' (bloquea mutaciones futuras)
-experimento_repo.guardar(experimento)
-db.cerrar()
+servicio.experimento_repo.guardar(experimento)
+servicio.cerrar()
 ```
 
----
-
 #### Escenario C: Trazabilidad Resultante en `labtrack.db` y `labtrack_system.log`
-Tras ejecutar los flujos anteriores, la capa de persistencia y el motor de logging reflejan de forma sincronizada el estado del sistema:
+Al finalizar los flujos anteriores, la base de datos relacional y el sistema de logs reflejan de forma sincronizada toda la auditoría:
 
-* **Salida en `labtrack_system.log`:**
+* **Salida registrada en `labtrack_system.log`:**
   ```text
   2026-11-26 17:15:02,110 - INFO - Iniciando aplicación LabTrack...
-  2026-11-26 17:15:02,115 - INFO - Capas de persistencia y servicio inicializadas con éxito.
   2026-11-26 17:15:08,402 - INFO - Experimento creado y persistido: 082aecab-46f7-427b-b990-48e0f8121269
-  2026-11-26 17:15:10,891 - INFO - Evento registrado en experimento 082aecab-46f7-427b-b990-48e0f8121269: Calibración instrumental y preparación de reactivos por Matías (Turno: Mañana)
+  2026-11-26 17:15:10,891 - INFO - Evento registrado en experimento 082aecab-46f7-427b-b990-48e0f8121269: Técnico Matías (Turno: Mañana) calibrando instrumental y preparando reactivos
   2026-11-26 17:15:24,310 - INFO - Experimento bifurcado a versión v2.0 (ID: 9f1c3e20-8a11-4c9d-a012-77b1e4d90012)
-  2026-11-26 17:15:30,004 - INFO - Cierre limpio de la aplicación por el usuario.
+  2026-11-26 17:15:30,004 - INFO - Cierre limpio de la aplicación y liberación de recursos.
   ```
 
 * **Registros persistidos en la tabla `trazabilidad` (`labtrack.db`):**
@@ -157,66 +169,51 @@ Tras ejecutar los flujos anteriores, la capa de persistencia y el motor de loggi
   4         | f47ac10b-58cc-4372-a567-0e02b2c3d479 | Experimento finalizado y validado por Alonso
   ```
 
-🛠️ GUÍA DEL DESARROLLADOR
+---
 
-Esta sección detalla la arquitectura interna, decisiones de diseño y herramientas de persistencia para futuros contribuidores.
+## 🛠️ GUÍA DEL DESARROLLADOR
 
-1. Arquitectura Orientada a Objetos (El Dominio)
-El sistema se divide en capas (cli/, models/, services/, persistence/, tests/) para separar la lógica de negocio de la interfaz. Todas las capas de la arquitectura están correctamente inicializadas como submódulos mediante __init__.py. En la capa de modelos (src/models/), interactúan las siguientes entidades:   
+Esta sección explica las decisiones arquitectónicas, el diseño del dominio y la estrategia de pruebas del sistema.
 
-- Experimento: Clase central que asocia un responsable, recursos y un historial de eventos.   
+### 1. Arquitectura en Capas y Separación de Responsabilidades
+El sistema divide el código en cuatro capas desacopladas, asegurando que la interfaz de usuario nunca acceda directamente a la base de datos ni contenga lógica de negocio:
 
-- Muestra: Gestiona el stock físico. Lanza excepciones (ValueError) si se intenta consumir más cantidad de la disponible.   
+* **Capa de Presentación (`src/cli/main.py`):** Gestiona exclusivamente la interacción por consola (`input`/`print`), captura excepciones y delega cada operación en `LaboratorioService`.
+* **Capa de Aplicación (`src/services/laboratorio_service.py`):** Orquesta los casos de uso, el estado activo de la sesión, el sistema de logging y los repositorios mediante **Inyección de Dependencias**.
+* **Capa de Dominio (`src/models/`):** Contiene las entidades y reglas de negocio puras, independientes de cualquier motor de almacenamiento o interfaz.
+* **Capa de Persistencia (`src/persistence/`):** Aísla el motor SQLite aplicando el **Principio de Responsabilidad Única (SRP)** y el **Patrón Repositorio**.
 
-- Equipamiento: Maquinaria con estados controlados ("Disponible", "En mantenimiento").   
+### 2. Enriquecimiento del Modelo de Dominio (Invariantes y Comportamiento)
+Para evitar un modelo de dominio anémico, cada entidad encapsula sus propias validaciones, máquinas de estado y reglas de negocio:
 
-- EventoTrazabilidad: Entidad inmutable que captura el "cuándo" (datetime.now()), "quién" y "qué" de cada acción.   
+* **`Experimento` (Agregado Raíz):** Gobierna un ciclo de vida estricto (`En preparación` $\rightarrow$ `En curso` $\rightarrow$ `Finalizado` / `Cancelado`). Una vez finalizado o cancelado, bloquea cualquier mutación posterior sobre su historial o recursos (`_verificar_experimento_abierto()`). Además, coordina el uso de equipamiento y consumo de muestras generando eventos de trazabilidad automáticamente.
+* **`Equipamiento`:** Controla su estado operativo (`Disponible`, `En uso`, `En mantenimiento`, `Fuera de servicio`) y su desgaste (`usos_acumulados`). Al alcanzar su `limite_usos_mantenimiento`, bloquea su uso y transiciona automáticamente a `"En mantenimiento"` hasta que se completa su revisión (`completar_mantenimiento()`).
+* **`Muestra`:** Protege su stock (`_cantidad`), bloquea cualquier consumo o reposición si se marca como contaminada (`marcar_contaminada()`) y detecta niveles críticos (`esta_en_nivel_critico()`).
+* **`MiembroLaboratorio` (`Investigador` / `Tecnico`):** Jerarquía abstracta (`ABC`) con polimorfismo en `ejecutar_tarea()` y políticas de autorización encapsuladas por rol (`puede_aprobar_experimento()`, `puede_calibrar_equipo()`), evitando comprobaciones externas de tipo.
+* **`EventoTrazabilidad`:** Registro de auditoría estrictamente inmutable que sobrescribe `__setattr__` para impedir cualquier alteración una vez instanciado.
+* **Versionado Inmutable (`bifurcar_version`):** Mediante `copy.deepcopy()`, clona el agregado completo asignando un nuevo `uuid4` y preservando intacto todo el historial previo.
 
-2. Herencia y Polimorfismo
-Para modelar al equipo de trabajo, hemos implementado una jerarquía de clases que demuestra el uso práctico de herencia y polimorfismo:   
+### 3. Persistencia Desacoplada (SRP), Logging y Manejo de Errores (PRAC3)
+* **Gestión de Conexión (`src/persistence/database.py`):** `ConexionBaseDatos` se encarga exclusivamente de abrir la conexión SQLite (`labtrack.db`), activar la integridad referencial (`PRAGMA foreign_keys = ON`) y definir el esquema de tablas (`personal`, `experimentos`, `trazabilidad`).
+* **Repositorios por Agregado (`src/persistence/repositories.py`):**
+  * `PersonalRepository`: Persiste y reconstruye de forma polimórfica instancias de `Investigador` y `Tecnico`.
+  * `ExperimentoRepository`: Persiste el experimento, sincroniza su historial de trazabilidad y reconstruye agregados completos desde disco (`obtener_por_id`), delegando el guardado del responsable en `PersonalRepository`.
+* **Logging Centralizado (`src/services/logger.py`):** Registra de forma transparente toda la actividad del sistema en `labtrack_system.log` (`INFO`, `WARNING`, `ERROR`).
+* **Manejo de Excepciones:** La CLI intercepta errores de reglas de negocio (`ValueError`) y fallos críticos (`Exception`) con mensajes claros, evitando interrupciones abruptas.
 
+### 4. Pruebas Automatizadas y Cobertura (14 Tests / 87 % Cobertura)
+La batería de pruebas con `pytest` y `pytest-cov` alcanza un **87 % de cobertura global** (con `laboratorio_service.py` y `database.py` al 100 %, `repositories.py` al 93 % y los modelos por encima del 82 %) validando tanto operaciones unitarias como comportamientos completos del sistema:
 
-- Superclase Abstracta: MiembroLaboratorio. Define los atributos comunes (id_miembro mediante uuid4, nombre, especialidad) y un método abstracto @abstractmethod def ejecutar_tarea().   
+* **Pruebas de Reglas de Dominio (`test_domain_rules.py` y `test_main.py`):** Verifican máquinas de estado, desgaste automático de equipos, contaminación de muestras, inmutabilidad de eventos, permisos por rol, casos límite y bifurcación de versiones.
+* **Pruebas de Integración y Repositorios (`test_database.py`):** Validan el ciclo completo guardar $\rightarrow$ recuperar reconstruyendo subclases polimórficas e historiales ordenados sobre bases de datos en RAM (`:memory:`), además de comprobar búsquedas inexistentes e integridad referencial (`sqlite3.IntegrityError`).
+* **Mocking de Interfaz (`test_cli.py`):** Simula una sesión completa de usuario mediante `unittest.mock.patch` ejercitando opciones inválidas, errores de validación controlados, bifurcación y cierre limpio.
+* **Pruebas End-to-End Multisesión (`test_e2e_workflows.py`):** Comprueban que el estado completo, las alertas de dominio y las protecciones frente a mutaciones sobreviven al cierre y reapertura del sistema sobre un archivo SQLite temporal (`tmp_path`).
 
+---
 
-- Subclases (Herencia): Las clases Investigador y Tecnico heredan de MiembroLaboratorio y sobrescriben el método ejecutar_tarea() con comportamientos distintos.   
-README.md
+## 🗂️ Estructura Final del Proyecto
 
-- Polimorfismo en Acción: La clase Experimento posee el método asignar_y_ejecutar_tarea(miembro: MiembroLaboratorio). Este método recibe un objeto genérico y ejecuta su tarea automáticamente, demostrando un acoplamiento débil y polimorfismo puro.   
-
-
-3. Motor de Trazabilidad y Versionado
-
-La trazabilidad es el pilar de LabTrack. No guardamos simples textos, sino que cada acción instancia un objeto EventoTrazabilidad, se almacena en la lista historial_eventos de la clase Experimento, y todo queda ligado al ID único (uuid4) del investigador que realizó la acción.   
-
-
-- Versionado: Para evitar que un experimento se convierta en un simple CRUD, hemos implementado el método bifurcar_version(nueva_version). Mediante copy.deepcopy(), clona el experimento entero, generando un nuevo id_experimento pero preservando de forma idéntica el historial de trazabilidad anterior.   
-
-4. Persistencia, Logging y Manejo de Errores (PRAC3)
-
-El proyecto ha evolucionado para integrar persistencia y monitorización profesional:   
-
-
-- Persistencia con SQLite: Se ha implementado el Patrón Repositorio en src/persistence/database.py. El sistema genera automáticamente el archivo labtrack.db, mapeando los objetos en memoria y sus UUIDs a tablas relacionales (personal, experimentos, trazabilidad) manteniendo el polimorfismo.   
-
-- Logging Centralizado: A través de src/services/logger.py, el sistema registra de forma invisible toda la actividad en el archivo labtrack_system.log, utilizando niveles de severidad (INFO, WARNING, ERROR).   
-
-
-- Manejo de Excepciones: La interfaz de consola (main.py) está blindada con bloques try/except que capturan tanto reglas de negocio (ValueError) como errores críticos, garantizando que el programa no se interrumpa abruptamente y mostrando mensajes limpios al usuario[cite: 4].
-
-5. Pruebas Automatizadas y Cobertura (Testing)
-
-El sistema de testing se ha ampliado superando ampliamente el objetivo del 55 % de cobertura global, manteniendo un 98.5% en la capa de lógica de negocio (models/)[cite: 4]. Se ha desarrollado una batería de pruebas con pytest evaluando[cite: 4]:
-
-- Pruebas de Dominio: Herencia, polimorfismo, casos límite (ej. consumir el 100% exacto de una muestra), y entradas inválidas (rechazar consumos de muestra negativos lanzando ValueError)[cite: 4].
-
-- Pruebas de Persistencia (test_database.py): Se valida el correcto funcionamiento del ORM personalizado y las consultas SQL instanciando bases de datos volátiles (:memory:), asegurando que los tests no corrompen el archivo labtrack.db de producción[cite: 4].
-
-- Mocking de Interfaz (test_cli.py): Utilizando @patch de la librería unittest.mock, se han automatizado las entradas del usuario (ej. simular la pulsación de la tecla '5') para testear el flujo de la terminal de forma desatendida, elevando la cobertura del módulo principal[cite: 4].
-
-**Estructura Final del Proyecto**
-Para que confirmes visualmente que tu repositorio está impecable antes de subirlo, esta es la estructura exacta que debes tener en Visual Studio Code:
-
+```text
 Trabajo-TCA-Gestor-de-Laboratorio/
 ├── .pytest_cache/
 ├── docs/
@@ -243,15 +240,19 @@ Trabajo-TCA-Gestor-de-Laboratorio/
 │   ├── persistence/
 │   │   ├── __pycache__/
 │   │   ├── __init__.py
-│   │   └── database.py
+│   │   ├── database.py
+│   │   └── repositories.py
 │   └── services/
 │       ├── __pycache__/
 │       ├── __init__.py
+│       ├── laboratorio_service.py
 │       └── logger.py
 ├── tests/
 │   ├── __pycache__/
 │   ├── test_cli.py
 │   ├── test_database.py
+│   ├── test_domain_rules.py
+│   ├── test_e2e_workflows.py
 │   └── test_main.py
 ├── venv/
 ├── .coverage
@@ -260,3 +261,4 @@ Trabajo-TCA-Gestor-de-Laboratorio/
 ├── labtrack.db
 ├── pyproject.toml
 └── README.md
+```
