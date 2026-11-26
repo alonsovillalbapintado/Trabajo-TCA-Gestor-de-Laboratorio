@@ -18,3 +18,9 @@
 2026-11-26 16:56:21,912 - INFO - Experimento creado y persistido: 2b4dfc0d-f06b-4e43-9045-26c924ba53fb
 2026-11-26 16:56:21,912 - INFO - Evento registrado en experimento 2b4dfc0d-f06b-4e43-9045-26c924ba53fb: Calibración inicial
 2026-11-26 16:56:21,913 - INFO - Experimento bifurcado a versión 2.0 (ID: ac87b903-45aa-4991-b12f-0b47e3186b29)
+2026-11-26 17:43:36,847 - INFO - Iniciando aplicación LabTrack...
+2026-11-26 17:43:36,848 - INFO - Capas de persistencia y servicio inicializadas con éxito.
+2026-11-26 17:43:46,231 - INFO - Experimento creado y persistido: e26400ae-a35e-4e74-9ad6-0238c449847f
+2026-11-26 17:43:47,730 - INFO - Evento registrado en experimento e26400ae-a35e-4e74-9ad6-0238c449847f: 3
+2026-11-26 17:43:48,662 - INFO - Experimento bifurcado a versión a (ID: 9ac6fc4b-d96f-4fa1-9875-67c8cd5bb20b)
+2026-11-26 17:43:49,750 - WARNING - El usuario intentó usar una opción inválida: a

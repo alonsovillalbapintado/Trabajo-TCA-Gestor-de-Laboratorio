@@ -24,25 +24,138 @@ El sistema está diseñado para ejecutarse interpretando el módulo principal. E
 
 python -m src.cli.main
 
-3. Ejemplos de Uso (Flujo de Consola CLI)
-El programa se ejecuta interactuando con la terminal. A continuación, un ejemplo real de ejecución:   
+### 3. Ejemplos Completos de Ejecución (Interacción entre Capas)
 
+A continuación se muestran tres escenarios completos que ilustran el flujo de datos de extremo a extremo: desde la interfaz de consola hasta la persistencia relacional y los registros de auditoría.
+
+#### Escenario A: Sesión Completa en Consola (Alta, Polimorfismo, Bifurcación y Consulta)
+Ejecutando `python -m src.cli.main`, el usuario interactúa con la capa `cli/`, que delega cada operación en `LaboratorioService` y persiste automáticamente los cambios mediante los repositorios:
+
+```text
 ========================================
 🔬 LABTRACK: GESTOR DE LABORATORIO 🔬
 ========================================
 1. Crear nuevo Personal y Experimento
 2. Registrar evento de Trazabilidad
-3. Mostrar estado actual y Trazabilidad
+3. Bifurcar Experimento (Crear nueva versión)
+4. Mostrar estado actual y Trazabilidad
+5. Salir
+========================================
+Selecciona una opción: 1
 
-> Selecciona una opción: 1
 --- ALTA DE PERSONAL Y EXPERIMENTO ---
 ¿Qué desea registrar? (1: Investigador / 2: Técnico): 2
 Nombre: Matías
-Especialidad/Área: Mantenimiento
+Especialidad/Área: Instrumentación
 Turno (Mañana/Tarde/Noche): Mañana
 
+--- NUEVO EXPERIMENTO ---
+Nombre del experimento: Espectroscopía UV-Vis
+
 ✅ ¡Éxito! Registrado Tecnico: Matías
-✅ Experimento 'Calibración A1' creado con ID: f82d1c9a-3b21-4f1e...
+✅ Experimento 'Espectroscopía UV-Vis' persistido con ID: 082aecab-46f7-427b-b990-48e0f8121269
+
+========================================
+Selecciona una opción: 2
+
+--- REGISTRAR ACCIÓN POLIMÓRFICA ---
+1. Ejecutar tarea automática según el perfil de personal
+2. Escribir descripción manual
+Selecciona opción: 1
+✅ Evento polimórfico registrado: 'Calibración instrumental y preparación de reactivos por Matías (Turno: Mañana)'
+
+========================================
+Selecciona una opción: 3
+
+Indica la nomenclatura de la nueva versión (ej. 'v1.1' o '2.0'): v2.0
+✅ Experimento bifurcado y guardado. Nueva versión activa: v2.0
+
+========================================
+Selecciona una opción: 4
+
+--- ESTADO DEL EXPERIMENTO ---
+Nombre:       Espectroscopía UV-Vis
+Versión:      v2.0
+Responsable:  Matías (Instrumentación)
+Estado:       En preparación
+
+--- HISTORIAL DE TRAZABILIDAD ---
+  [2026-11-26 17:15:10] (Usuario: 6614259d-f723-4bdf-b78d-42fc103c1a9f) -> Calibración instrumental y preparación de reactivos por Matías (Turno: Mañana)
+  [2026-11-26 17:15:24] (Usuario: 6614259d-f723-4bdf-b78d-42fc103c1a9f) -> Bifurcación creada desde versión 1.0 -> v2.0
+
+========================================
+Selecciona una opción: 5
+
+Saliendo de LabTrack... ¡Hasta pronto!
+```
+
+---
+
+#### Escenario B: Colaboración entre Dominio Rico, Servicio y Persistencia
+El siguiente flujo muestra cómo las entidades de `src/models/` protegen sus invariantes de negocio (ciclo de vida, permisos por rol, desgaste de equipos y umbral crítico de muestras) mientras `LaboratorioService` sincroniza el estado en SQLite:
+
+```python
+from src.persistence.database import ConexionBaseDatos
+from src.persistence.repositories import PersonalRepository, ExperimentoRepository
+from src.services.laboratorio_service import LaboratorioService
+from src.models.equipamiento import Equipamiento
+from src.models.muestra import Muestra
+
+# 1. Inicialización de infraestructura e inyección de dependencias
+db = ConexionBaseDatos("labtrack.db")
+personal_repo = PersonalRepository(db.conexion)
+experimento_repo = ExperimentoRepository(db.conexion, personal_repo)
+servicio = LaboratorioService(experimento_repo)
+
+# 2. Creación de actores y agregado raíz mediante el servicio
+investigador = servicio.registrar_personal("1", "Alonso", "Bioinformática", "Principal")
+tecnico = servicio.registrar_personal("2", "Matías", "Instrumentación", "Mañana")
+experimento = servicio.crear_experimento("Secuenciación Genómica", investigador)
+
+# 3. Ejecución de reglas de negocio encapsuladas en el dominio
+experimento.iniciar()  # Transición de estado: 'En preparación' -> 'En curso'
+
+espectrometro = Equipamiento("Espectrómetro UV", limite_usos_mantenimiento=1)
+reactivo = Muestra("Reactivo ADN", cantidad=10.0, unidad="ml", umbral_critico=5.0)
+
+experimento.utilizar_equipamiento(espectrometro)      # Agota límite de usos -> pasa a 'En mantenimiento'
+experimento.consumir_muestra(reactivo, cantidad=7.0)  # Stock restante: 3.0 ml -> activa alerta crítica
+
+# 4. Control de autorizaciones e invariantes de cierre
+try:
+    experimento.finalizar(tecnico)  # Rechazado: un Técnico no tiene permiso de aprobación
+except ValueError as err:
+    print(f"Regla de negocio aplicada: {err}")
+
+experimento.finalizar(investigador)  # Aceptado: estado -> 'Finalizado' (bloquea mutaciones futuras)
+experimento_repo.guardar(experimento)
+db.cerrar()
+```
+
+---
+
+#### Escenario C: Trazabilidad Resultante en `labtrack.db` y `labtrack_system.log`
+Tras ejecutar los flujos anteriores, la capa de persistencia y el motor de logging reflejan de forma sincronizada el estado del sistema:
+
+* **Salida en `labtrack_system.log`:**
+  ```text
+  2026-11-26 17:15:02,110 - INFO - Iniciando aplicación LabTrack...
+  2026-11-26 17:15:02,115 - INFO - Capas de persistencia y servicio inicializadas con éxito.
+  2026-11-26 17:15:08,402 - INFO - Experimento creado y persistido: 082aecab-46f7-427b-b990-48e0f8121269
+  2026-11-26 17:15:10,891 - INFO - Evento registrado en experimento 082aecab-46f7-427b-b990-48e0f8121269: Calibración instrumental y preparación de reactivos por Matías (Turno: Mañana)
+  2026-11-26 17:15:24,310 - INFO - Experimento bifurcado a versión v2.0 (ID: 9f1c3e20-8a11-4c9d-a012-77b1e4d90012)
+  2026-11-26 17:15:30,004 - INFO - Cierre limpio de la aplicación por el usuario.
+  ```
+
+* **Registros persistidos en la tabla `trazabilidad` (`labtrack.db`):**
+  ```text
+  id_evento | id_experimento                       | accion
+  ----------+--------------------------------------+---------------------------------------------------------------------------------
+  1         | f47ac10b-58cc-4372-a567-0e02b2c3d479 | Inicio formal de ejecución experimental
+  2         | f47ac10b-58cc-4372-a567-0e02b2c3d479 | Uso de equipamiento 'Espectrómetro UV' [ALERTA: Equipo enviado automáticamente a mantenimiento]
+  3         | f47ac10b-58cc-4372-a567-0e02b2c3d479 | Consumo de 7.0 ml de 'Reactivo ADN' [ALERTA: Stock en nivel crítico]
+  4         | f47ac10b-58cc-4372-a567-0e02b2c3d479 | Experimento finalizado y validado por Alonso
+  ```
 
 🛠️ GUÍA DEL DESARROLLADOR
 
