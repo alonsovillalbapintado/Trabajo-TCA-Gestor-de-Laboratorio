@@ -30,6 +30,7 @@ labtrack = "src.cli.main:ejecutar_flujo_principal"
 
 [tool.pytest.ini_options]
 minversion = "7.0"
+pythonpath = ["."]
 addopts = "--cov=src"
 testpaths = [
     "tests",
