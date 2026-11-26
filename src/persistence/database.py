@@ -1,5 +1,6 @@
 import sqlite3
 
+
 class ConexionBaseDatos:
     """Gestiona exclusivamente la conexión a SQLite y la definición del esquema."""
 

@@ -1,6 +1,7 @@
 import uuid
 from abc import ABC, abstractmethod
 
+
 class MiembroLaboratorio(ABC):
     """Superclase abstracta con invariantes de identidad y políticas de autorización."""
 
@@ -8,7 +9,9 @@ class MiembroLaboratorio(ABC):
         if not nombre or not nombre.strip():
             raise ValueError("El nombre del miembro del laboratorio es obligatorio.")
         if not especialidad or not especialidad.strip():
-            raise ValueError("La especialidad del miembro del laboratorio es obligatoria.")
+            raise ValueError(
+                "La especialidad del miembro del laboratorio es obligatoria."
+            )
 
         self.id_miembro = str(uuid.uuid4())
         self.nombre = nombre.strip()

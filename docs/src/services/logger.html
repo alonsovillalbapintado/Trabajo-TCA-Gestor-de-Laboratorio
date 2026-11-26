@@ -56,25 +56,26 @@
 
                         <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a>
-</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="k">def</span><span class="w"> </span><span class="nf">get_logger</span><span class="p">():</span>
-</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="sd">    Configura y devuelve un logger que escribe los eventos en un archivo local.</span>
-</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="sd">    """</span>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a>    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"LabTrackLogger"</span><span class="p">)</span>
-</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>
-</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a>    <span class="c1"># Evitamos añadir múltiples manejadores si se llama a la función varias veces</span>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>        <span class="c1"># FileHandler: Guarda los logs físicamente en la raíz del proyecto</span>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>        <span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="s2">"labtrack_system.log"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>        
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>        <span class="c1"># Formato: [2026-11-04 10:30:15] - [INFO/ERROR] - [Mensaje]</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>        <span class="n">formato</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">'</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">'</span><span class="p">)</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>        <span class="n">file_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formato</span><span class="p">)</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>        
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">file_handler</span><span class="p">)</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>    <span class="k">return</span> <span class="n">logger</span>
+</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a>
+</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="k">def</span><span class="w"> </span><span class="nf">get_logger</span><span class="p">():</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="sd">    Configura y devuelve un logger que escribe los eventos en un archivo local.</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="sd">    """</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"LabTrackLogger"</span><span class="p">)</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a>    <span class="c1"># Evitamos añadir múltiples manejadores si se llama a la función varias veces</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>        <span class="c1"># FileHandler: Guarda los logs físicamente en la raíz del proyecto</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>        <span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="s2">"labtrack_system.log"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>        <span class="c1"># Formato: [2026-11-04 10:30:15] - [INFO/ERROR] - [Mensaje]</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>        <span class="n">formato</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">"</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>        <span class="n">file_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formato</span><span class="p">)</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">file_handler</span><span class="p">)</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>    <span class="k">return</span> <span class="n">logger</span>
 </span></pre></div>
 
 
@@ -90,25 +91,25 @@
 
     </div>
     <a class="headerlink" href="#get_logger"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="get_logger-4"><a href="#get_logger-4"><span class="linenos"> 4</span></a><span class="k">def</span><span class="w"> </span><span class="nf">get_logger</span><span class="p">():</span>
-</span><span id="get_logger-5"><a href="#get_logger-5"><span class="linenos"> 5</span></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="get_logger-6"><a href="#get_logger-6"><span class="linenos"> 6</span></a><span class="sd">    Configura y devuelve un logger que escribe los eventos en un archivo local.</span>
-</span><span id="get_logger-7"><a href="#get_logger-7"><span class="linenos"> 7</span></a><span class="sd">    """</span>
-</span><span id="get_logger-8"><a href="#get_logger-8"><span class="linenos"> 8</span></a>    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"LabTrackLogger"</span><span class="p">)</span>
-</span><span id="get_logger-9"><a href="#get_logger-9"><span class="linenos"> 9</span></a>    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
-</span><span id="get_logger-10"><a href="#get_logger-10"><span class="linenos">10</span></a>
-</span><span id="get_logger-11"><a href="#get_logger-11"><span class="linenos">11</span></a>    <span class="c1"># Evitamos añadir múltiples manejadores si se llama a la función varias veces</span>
-</span><span id="get_logger-12"><a href="#get_logger-12"><span class="linenos">12</span></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
-</span><span id="get_logger-13"><a href="#get_logger-13"><span class="linenos">13</span></a>        <span class="c1"># FileHandler: Guarda los logs físicamente en la raíz del proyecto</span>
-</span><span id="get_logger-14"><a href="#get_logger-14"><span class="linenos">14</span></a>        <span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="s2">"labtrack_system.log"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
-</span><span id="get_logger-15"><a href="#get_logger-15"><span class="linenos">15</span></a>        
-</span><span id="get_logger-16"><a href="#get_logger-16"><span class="linenos">16</span></a>        <span class="c1"># Formato: [2026-11-04 10:30:15] - [INFO/ERROR] - [Mensaje]</span>
-</span><span id="get_logger-17"><a href="#get_logger-17"><span class="linenos">17</span></a>        <span class="n">formato</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">'</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">'</span><span class="p">)</span>
-</span><span id="get_logger-18"><a href="#get_logger-18"><span class="linenos">18</span></a>        <span class="n">file_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formato</span><span class="p">)</span>
-</span><span id="get_logger-19"><a href="#get_logger-19"><span class="linenos">19</span></a>        
-</span><span id="get_logger-20"><a href="#get_logger-20"><span class="linenos">20</span></a>        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">file_handler</span><span class="p">)</span>
-</span><span id="get_logger-21"><a href="#get_logger-21"><span class="linenos">21</span></a>
-</span><span id="get_logger-22"><a href="#get_logger-22"><span class="linenos">22</span></a>    <span class="k">return</span> <span class="n">logger</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="get_logger-5"><a href="#get_logger-5"><span class="linenos"> 5</span></a><span class="k">def</span><span class="w"> </span><span class="nf">get_logger</span><span class="p">():</span>
+</span><span id="get_logger-6"><a href="#get_logger-6"><span class="linenos"> 6</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="get_logger-7"><a href="#get_logger-7"><span class="linenos"> 7</span></a><span class="sd">    Configura y devuelve un logger que escribe los eventos en un archivo local.</span>
+</span><span id="get_logger-8"><a href="#get_logger-8"><span class="linenos"> 8</span></a><span class="sd">    """</span>
+</span><span id="get_logger-9"><a href="#get_logger-9"><span class="linenos"> 9</span></a>    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"LabTrackLogger"</span><span class="p">)</span>
+</span><span id="get_logger-10"><a href="#get_logger-10"><span class="linenos">10</span></a>    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+</span><span id="get_logger-11"><a href="#get_logger-11"><span class="linenos">11</span></a>
+</span><span id="get_logger-12"><a href="#get_logger-12"><span class="linenos">12</span></a>    <span class="c1"># Evitamos añadir múltiples manejadores si se llama a la función varias veces</span>
+</span><span id="get_logger-13"><a href="#get_logger-13"><span class="linenos">13</span></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
+</span><span id="get_logger-14"><a href="#get_logger-14"><span class="linenos">14</span></a>        <span class="c1"># FileHandler: Guarda los logs físicamente en la raíz del proyecto</span>
+</span><span id="get_logger-15"><a href="#get_logger-15"><span class="linenos">15</span></a>        <span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="s2">"labtrack_system.log"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+</span><span id="get_logger-16"><a href="#get_logger-16"><span class="linenos">16</span></a>
+</span><span id="get_logger-17"><a href="#get_logger-17"><span class="linenos">17</span></a>        <span class="c1"># Formato: [2026-11-04 10:30:15] - [INFO/ERROR] - [Mensaje]</span>
+</span><span id="get_logger-18"><a href="#get_logger-18"><span class="linenos">18</span></a>        <span class="n">formato</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">"</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="get_logger-19"><a href="#get_logger-19"><span class="linenos">19</span></a>        <span class="n">file_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formato</span><span class="p">)</span>
+</span><span id="get_logger-20"><a href="#get_logger-20"><span class="linenos">20</span></a>
+</span><span id="get_logger-21"><a href="#get_logger-21"><span class="linenos">21</span></a>        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">file_handler</span><span class="p">)</span>
+</span><span id="get_logger-22"><a href="#get_logger-22"><span class="linenos">22</span></a>
+</span><span id="get_logger-23"><a href="#get_logger-23"><span class="linenos">23</span></a>    <span class="k">return</span> <span class="n">logger</span>
 </span></pre></div>
 
 

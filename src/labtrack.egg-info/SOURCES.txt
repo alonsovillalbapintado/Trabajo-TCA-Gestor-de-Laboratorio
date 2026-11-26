@@ -1,3 +1,4 @@
+LICENSE
 README.md
 pyproject.toml
 src/cli/__init__.py
@@ -5,6 +6,7 @@ src/cli/main.py
 src/labtrack.egg-info/PKG-INFO
 src/labtrack.egg-info/SOURCES.txt
 src/labtrack.egg-info/dependency_links.txt
+src/labtrack.egg-info/entry_points.txt
 src/labtrack.egg-info/requires.txt
 src/labtrack.egg-info/top_level.txt
 src/models/__init__.py
@@ -22,4 +24,5 @@ src/services/logger.py
 tests/test_cli.py
 tests/test_database.py
 tests/test_domain_rules.py
+tests/test_e2e_workflows.py
 tests/test_main.py

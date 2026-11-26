@@ -1,0 +1,2 @@
+[console_scripts]
+labtrack = src.cli.main:ejecutar_flujo_principal

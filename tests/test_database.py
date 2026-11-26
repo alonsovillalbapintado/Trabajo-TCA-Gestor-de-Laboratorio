@@ -1,9 +1,12 @@
 import sqlite3
+
 import pytest
-from src.persistence.database import ConexionBaseDatos
-from src.persistence.repositories import PersonalRepository, ExperimentoRepository
-from src.services.laboratorio_service import LaboratorioService
+
 from src.models.personal import Tecnico
+from src.persistence.database import ConexionBaseDatos
+from src.persistence.repositories import ExperimentoRepository, PersonalRepository
+from src.services.laboratorio_service import LaboratorioService
+
 
 def test_recuperacion_completa_agregado_y_polimorfismo():
     """Verifica el ciclo completo guardar -> recuperar reconstruyendo subclase e historial ordenado."""
@@ -15,7 +18,9 @@ def test_recuperacion_completa_agregado_y_polimorfismo():
     tec = servicio.registrar_personal("2", "Matías", "Instrumentación", "Noche")
     exp = servicio.crear_experimento("Cromatografía Líquida", tec)
     servicio.registrar_evento(exp, tec, automatico=True)
-    servicio.registrar_evento(exp, tec, automatico=False, descripcion="Ajuste de presión")
+    servicio.registrar_evento(
+        exp, tec, automatico=False, descripcion="Ajuste de presión"
+    )
     exp.iniciar()
     exp_repo.guardar(exp)
 
@@ -30,6 +35,7 @@ def test_recuperacion_completa_agregado_y_polimorfismo():
     assert recuperado.historial_eventos[1].accion == "Ajuste de presión"
 
     db.cerrar()
+
 
 def test_busqueda_inexistente_y_clave_foranea():
     """Valida respuestas ante registros inexistentes y protección de integridad referencial."""

@@ -1,7 +1,9 @@
 import pytest
-from src.services.laboratorio_service import LaboratorioService
+
 from src.models.equipamiento import Equipamiento
 from src.models.muestra import Muestra
+from src.services.laboratorio_service import LaboratorioService
+
 
 def test_flujo_completo_multisession_persistencia(tmp_path):
     """Valida que todo el estado, trazabilidad y ciclo de vida sobreviven al cierre y reapertura."""
@@ -9,7 +11,9 @@ def test_flujo_completo_multisession_persistencia(tmp_path):
 
     # --- SESIÓN 1: Creación, ejecución con equipos/muestras y cierre ---
     servicio_1 = LaboratorioService.crear_desde_sqlite(ruta_db)
-    datos = servicio_1.iniciar_nueva_sesion("1", "Alonso", "Bioinformática", "Principal", "Análisis Genómico")
+    datos = servicio_1.iniciar_nueva_sesion(
+        "1", "Alonso", "Bioinformática", "Principal", "Análisis Genómico"
+    )
     id_exp = datos["id_experimento"]
 
     exp = servicio_1.experimento_activo
@@ -30,11 +34,16 @@ def test_flujo_completo_multisession_persistencia(tmp_path):
     assert resumen["nombre"] == "Análisis Genómico"
     assert resumen["estado"] == "Finalizado"
     assert len(resumen["eventos"]) == 4
-    assert any("ALERTA: Equipo enviado automáticamente a mantenimiento" in ev for ev in resumen["eventos"])
+    assert any(
+        "ALERTA: Equipo enviado automáticamente a mantenimiento" in ev
+        for ev in resumen["eventos"]
+    )
     assert any("ALERTA: Stock en nivel crítico" in ev for ev in resumen["eventos"])
 
     # Verificar que tras recuperar un experimento finalizado sigue protegido frente a mutaciones
     with pytest.raises(ValueError):
-        servicio_2.registrar_evento_activo(automatico=False, descripcion="Intento post-cierre")
+        servicio_2.registrar_evento_activo(
+            automatico=False, descripcion="Intento post-cierre"
+        )
 
     servicio_2.cerrar()

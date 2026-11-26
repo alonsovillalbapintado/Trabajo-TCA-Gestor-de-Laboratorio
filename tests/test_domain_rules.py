@@ -1,9 +1,11 @@
 import pytest
-from src.models.personal import Investigador, Tecnico
-from src.models.experimento import Experimento
+
 from src.models.equipamiento import Equipamiento
+from src.models.experimento import Experimento
 from src.models.muestra import Muestra
+from src.models.personal import Investigador, Tecnico
 from src.models.trazabilidad import EventoTrazabilidad
+
 
 def test_equipamiento_desgaste_y_mantenimiento():
     equipo = Equipamiento("Espectrómetro UV", limite_usos_mantenimiento=2)
@@ -27,6 +29,7 @@ def test_equipamiento_desgaste_y_mantenimiento():
     assert equipo.esta_disponible() is True
     assert equipo.usos_acumulados == 0
 
+
 def test_muestra_contaminacion_y_umbral_critico():
     muestra = Muestra("Reactivo A", cantidad=12.0, unidad="ml", umbral_critico=5.0)
     muestra.consumir(8.0)
@@ -39,10 +42,12 @@ def test_muestra_contaminacion_y_umbral_critico():
     with pytest.raises(ValueError):
         muestra.reponer(10.0)
 
+
 def test_inmutabilidad_evento_trazabilidad():
     evento = EventoTrazabilidad("Calibración inicial", "uuid-123")
     with pytest.raises(AttributeError):
         evento.accion = "Acción manipulada"
+
 
 def test_ciclo_vida_y_permisos_experimento():
     inv = Investigador("Alonso", "Bioinformática", "Principal")
