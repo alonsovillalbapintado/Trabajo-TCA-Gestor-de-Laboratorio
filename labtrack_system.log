@@ -114,3 +114,63 @@
 2026-11-26 18:26:17,750 - INFO - Cierre limpio de la aplicación y liberación de recursos.
 2026-11-26 18:26:17,752 - INFO - Experimento recuperado en sesión: c8ce2343-e039-4bda-a911-3c75d83c0cd8
 2026-11-26 18:26:17,752 - INFO - Cierre limpio de la aplicación y liberación de recursos.
+2026-11-26 18:47:47,529 - INFO - Iniciando aplicación LabTrack...
+2026-11-26 18:47:47,530 - WARNING - Opción de menú inválida: 99
+2026-11-26 18:47:47,530 - WARNING - Acción denegada en Opción 2: No hay ningún experimento activo en la sesión. Crea o carga uno primero.
+2026-11-26 18:47:47,530 - INFO - Experimento creado y persistido: 33e4e61b-5703-408a-99a0-171065230d08
+2026-11-26 18:47:47,530 - INFO - Evento registrado en experimento 33e4e61b-5703-408a-99a0-171065230d08: Investigador Alonso (Principal) diseñando protocolo y validando hipótesis
+2026-11-26 18:47:47,530 - WARNING - Acción denegada en Opción 2: La descripción de la acción de trazabilidad no puede estar vacía.
+2026-11-26 18:47:47,531 - INFO - Experimento bifurcado a versión 2.0 (ID: 67917aed-a7ff-4dd9-8b05-b3844fae224f)
+2026-11-26 18:47:47,531 - INFO - Cierre limpio de la aplicación y liberación de recursos.
+2026-11-26 18:47:47,534 - INFO - Experimento creado y persistido: 63983fdc-c418-4965-bb08-721166a0319e
+2026-11-26 18:47:47,534 - INFO - Evento registrado en experimento 63983fdc-c418-4965-bb08-721166a0319e: Técnico Matías (Turno: Noche) calibrando instrumental y preparando reactivos
+2026-11-26 18:47:47,534 - INFO - Evento registrado en experimento 63983fdc-c418-4965-bb08-721166a0319e: Ajuste de presión
+2026-11-26 18:47:47,555 - INFO - Experimento creado y persistido: f14eb404-5341-4b87-8146-bced6fd2d199
+2026-11-26 18:47:47,561 - INFO - Cierre limpio de la aplicación y liberación de recursos.
+2026-11-26 18:47:47,562 - INFO - Experimento recuperado en sesión: f14eb404-5341-4b87-8146-bced6fd2d199
+2026-11-26 18:47:47,562 - INFO - Cierre limpio de la aplicación y liberación de recursos.
+2026-11-26 19:40:51,406 - INFO - Iniciando aplicación LabTrack...
+2026-11-26 19:40:51,407 - WARNING - Opción de menú inválida: 99
+2026-11-26 19:40:51,407 - WARNING - Acción denegada en Opción 2: No hay ningún experimento activo en la sesión. Crea o carga uno primero.
+2026-11-26 19:40:51,407 - INFO - Experimento creado y persistido: 9f1dbfd0-879c-43cb-92cd-f71dd7689015
+2026-11-26 19:40:51,407 - INFO - Evento registrado en experimento 9f1dbfd0-879c-43cb-92cd-f71dd7689015: Investigador Alonso (Principal) diseñando protocolo y validando hipótesis
+2026-11-26 19:40:51,407 - WARNING - Acción denegada en Opción 2: La descripción de la acción de trazabilidad no puede estar vacía.
+2026-11-26 19:40:51,408 - INFO - Experimento bifurcado a versión 2.0 (ID: 90304607-41d7-4a7a-8514-63ecb8c540a1)
+2026-11-26 19:40:51,408 - INFO - Cierre limpio de la aplicación y liberación de recursos.
+2026-11-26 19:40:51,410 - INFO - Experimento creado y persistido: 9174d81a-5d45-4091-afcb-cdd5244ee183
+2026-11-26 19:40:51,411 - INFO - Evento registrado en experimento 9174d81a-5d45-4091-afcb-cdd5244ee183: Técnico Matías (Turno: Noche) calibrando instrumental y preparando reactivos
+2026-11-26 19:40:51,411 - INFO - Evento registrado en experimento 9174d81a-5d45-4091-afcb-cdd5244ee183: Ajuste de presión
+2026-11-26 19:40:51,431 - INFO - Experimento creado y persistido: 3e628ac7-4408-44f1-ad86-d409e8f55382
+2026-11-26 19:40:51,435 - INFO - Cierre limpio de la aplicación y liberación de recursos.
+2026-11-26 19:40:51,436 - INFO - Experimento recuperado en sesión: 3e628ac7-4408-44f1-ad86-d409e8f55382
+2026-11-26 19:40:51,436 - INFO - Cierre limpio de la aplicación y liberación de recursos.
+2026-11-26 19:48:56,264 - INFO - Iniciando aplicación LabTrack...
+2026-11-26 19:48:56,265 - WARNING - Opción de menú inválida: 99
+2026-11-26 19:48:56,265 - WARNING - Acción denegada en Opción 2: No hay ningún experimento activo en la sesión. Crea o carga uno primero.
+2026-11-26 19:48:56,266 - INFO - Experimento creado y persistido: bd18551d-274c-4012-9fd6-4404ff8da4c4
+2026-11-26 19:48:56,266 - INFO - Evento registrado en experimento bd18551d-274c-4012-9fd6-4404ff8da4c4: Investigador Alonso (Principal) diseñando protocolo y validando hipótesis
+2026-11-26 19:48:56,266 - WARNING - Acción denegada en Opción 2: La descripción de la acción de trazabilidad no puede estar vacía.
+2026-11-26 19:48:56,267 - INFO - Experimento bifurcado a versión 2.0 (ID: e77724d6-c3be-47ab-b70d-7568851e5fac)
+2026-11-26 19:48:56,267 - INFO - Cierre limpio de la aplicación y liberación de recursos.
+2026-11-26 19:48:56,269 - INFO - Experimento creado y persistido: bf94d4e0-b103-4acf-ba46-37aca2729f62
+2026-11-26 19:48:56,269 - INFO - Evento registrado en experimento bf94d4e0-b103-4acf-ba46-37aca2729f62: Técnico Matías (Turno: Noche) calibrando instrumental y preparando reactivos
+2026-11-26 19:48:56,269 - INFO - Evento registrado en experimento bf94d4e0-b103-4acf-ba46-37aca2729f62: Ajuste de presión
+2026-11-26 19:48:56,289 - INFO - Experimento creado y persistido: fefb07b6-5318-4936-a960-ec7b2ebe4ab9
+2026-11-26 19:48:56,292 - INFO - Cierre limpio de la aplicación y liberación de recursos.
+2026-11-26 19:48:56,293 - INFO - Experimento recuperado en sesión: fefb07b6-5318-4936-a960-ec7b2ebe4ab9
+2026-11-26 19:48:56,294 - INFO - Cierre limpio de la aplicación y liberación de recursos.
+2026-11-26 19:54:13,423 - INFO - Iniciando aplicación LabTrack...
+2026-11-26 19:54:13,424 - WARNING - Opción de menú inválida: 99
+2026-11-26 19:54:13,424 - WARNING - Acción denegada en Opción 2: No hay ningún experimento activo en la sesión. Crea o carga uno primero.
+2026-11-26 19:54:13,424 - INFO - Experimento creado y persistido: eaf00ad4-dd37-42db-96e3-c28e5647924e
+2026-11-26 19:54:13,424 - INFO - Evento registrado en experimento eaf00ad4-dd37-42db-96e3-c28e5647924e: Investigador Alonso (Principal) diseñando protocolo y validando hipótesis
+2026-11-26 19:54:13,424 - WARNING - Acción denegada en Opción 2: La descripción de la acción de trazabilidad no puede estar vacía.
+2026-11-26 19:54:13,425 - INFO - Experimento bifurcado a versión 2.0 (ID: e3b30e9e-ed23-4be2-a2aa-2823fa376f8b)
+2026-11-26 19:54:13,425 - INFO - Cierre limpio de la aplicación y liberación de recursos.
+2026-11-26 19:54:13,427 - INFO - Experimento creado y persistido: 5ed9d2f0-f719-4795-bcc5-aae92475bdd1
+2026-11-26 19:54:13,427 - INFO - Evento registrado en experimento 5ed9d2f0-f719-4795-bcc5-aae92475bdd1: Técnico Matías (Turno: Noche) calibrando instrumental y preparando reactivos
+2026-11-26 19:54:13,427 - INFO - Evento registrado en experimento 5ed9d2f0-f719-4795-bcc5-aae92475bdd1: Ajuste de presión
+2026-11-26 19:54:13,449 - INFO - Experimento creado y persistido: 2241d942-77d2-4766-861c-50ff49fa7619
+2026-11-26 19:54:13,453 - INFO - Cierre limpio de la aplicación y liberación de recursos.
+2026-11-26 19:54:13,454 - INFO - Experimento recuperado en sesión: 2241d942-77d2-4766-861c-50ff49fa7619
+2026-11-26 19:54:13,454 - INFO - Cierre limpio de la aplicación y liberación de recursos.
