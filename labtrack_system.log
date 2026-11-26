@@ -12,3 +12,9 @@
 2026-11-04 21:18:38,075 - INFO - Iniciando aplicación LabTrack...
 2026-11-04 21:18:38,076 - INFO - Conexión a base de datos inicializada con éxito.
 2026-11-04 21:18:38,077 - INFO - Cierre limpio de la aplicación por el usuario.
+2026-11-26 16:56:21,902 - INFO - Iniciando aplicación LabTrack...
+2026-11-26 16:56:21,909 - INFO - Capas de persistencia y servicio inicializadas con éxito.
+2026-11-26 16:56:21,909 - INFO - Cierre limpio de la aplicación por el usuario.
+2026-11-26 16:56:21,912 - INFO - Experimento creado y persistido: 2b4dfc0d-f06b-4e43-9045-26c924ba53fb
+2026-11-26 16:56:21,912 - INFO - Evento registrado en experimento 2b4dfc0d-f06b-4e43-9045-26c924ba53fb: Calibración inicial
+2026-11-26 16:56:21,913 - INFO - Experimento bifurcado a versión 2.0 (ID: ac87b903-45aa-4991-b12f-0b47e3186b29)

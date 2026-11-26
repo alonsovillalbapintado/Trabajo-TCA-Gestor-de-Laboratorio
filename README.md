@@ -2,7 +2,7 @@
 
 **Grupo 2**  
 **Integrantes:** Matías Mayor, Alonso Villalba Pintado, Antonio Hermana Rubio  
-**Asignatura:** Técnicas de Programación Avanzada (PRAC2 y PRAC3)  
+**Asignatura:** Técnicas de Programación Avanzada 
 
 LabTrack es un sistema de gestión de laboratorios diseñado con una arquitectura robusta Orientada a Objetos (POO). Su objetivo es garantizar la trazabilidad inmutable de los experimentos y gestionar los recursos (personal, muestras y equipamiento) del laboratorio.
 
