@@ -1,4 +1,5 @@
 import sys
+from pathlib import Path
 
 from src.services.laboratorio_service import LaboratorioService
 from src.services.logger import get_logger
@@ -143,42 +144,99 @@ def ejecutar_flujo_principal(servicio: LaboratorioService | None = None):
 
 
 def ejecutar_modo_demo():
-    """Ejecuta una demostración completa desatendida para validación rápida en el aula."""
+    """Ejecuta una demostración completa y autoexplicativa de todas las capacidades de LabTrack."""
     from src.models.equipamiento import Equipamiento
     from src.models.muestra import Muestra
 
-    print("\n🚀 INICIANDO MODO DEMO AUTOMÁTICO DE LABTRACK...")
-    servicio = LaboratorioService.crear_desde_sqlite(":memory:")
+    ruta_db_demo = Path("labtrack_demo.db")
+    if ruta_db_demo.exists():
+        ruta_db_demo.unlink()
 
-    resumen = servicio.iniciar_nueva_sesion(
-        "1", "Alonso", "Bioinformática", "Principal", "Síntesis Proteica"
+    print("\n" + "=" * 68)
+    print("🔬 LABTRACK v1.0.0 — DEMOSTRACIÓN INTEGRAL DEL SISTEMA")
+    print("=" * 68)
+
+    # PASO 1: Inicialización de infraestructura SQLite real y alta de perfiles
+    servicio = LaboratorioService.crear_desde_sqlite(str(ruta_db_demo))
+    investigador = servicio.registrar_personal(
+        "1", "Alonso Villalba", "Bioinformática", "Principal"
     )
+    tecnico = servicio.registrar_personal(
+        "2", "Matías Mayor", "Instrumentación", "Mañana"
+    )
+    experimento = servicio.crear_experimento("Secuenciación Genómica", investigador)
+    print("\n[1/7] ALTA DE PERSONAL Y EXPERIMENTO (SQLite real)")
+    print(f"      • Investigador: {investigador.nombre} ({investigador.especialidad})")
+    print(f"      • Técnico:      {tecnico.nombre} (Turno: {tecnico.turno})")
     print(
-        f"1. Alta completada -> {resumen['experimento']} (ID: {resumen['id_experimento']})"
+        f"      • Experimento:  '{experimento.nombre}' | Estado: '{experimento.estado}'"
     )
+    print(f"      • UUID creado:  {experimento.id_experimento}")
 
-    exp = servicio.experimento_activo
-    exp.iniciar()
+    # PASO 2: Máquina de estados, desgaste automático de equipo y alerta de stock
+    experimento.iniciar()
     equipo = Equipamiento("Espectrómetro UV-Vis", limite_usos_mantenimiento=1)
-    muestra = Muestra("Reactivo Buffer", cantidad=10.0, unidad="ml", umbral_critico=4.0)
-
-    exp.utilizar_equipamiento(equipo)
-    exp.consumir_muestra(muestra, 7.0)
-    servicio.experimento_repo.guardar(exp)
+    muestra = Muestra(
+        "Reactivo ADN Polimerasa", cantidad=10.0, unidad="ml", umbral_critico=4.0
+    )
+    experimento.utilizar_equipamiento(equipo)
+    experimento.consumir_muestra(muestra, 7.0)
+    print("\n[2/7] REGLAS DE DOMINIO Y ALERTAS AUTOMÁTICAS")
+    print(f"      • Estado experimento tras iniciar: '{experimento.estado}'")
+    print(f"      • Estado equipo tras alcanzar límite de usos: '{equipo.estado}'")
     print(
-        f"2. Reglas de dominio ejecutadas -> Equipo: '{equipo.estado}' | Stock crítico: {muestra.esta_en_nivel_critico()}"
+        f"      • Stock restante: {muestra.cantidad} {muestra.unidad} "
+        f"(¿Nivel crítico?: {muestra.esta_en_nivel_critico()})"
     )
 
+    # PASO 3: Control de autorización por rol (bloqueo de acción no permitida)
+    print("\n[3/7] SEGURIDAD DE DOMINIO Y CONTROL DE ROLES")
+    try:
+        experimento.finalizar(tecnico)
+    except ValueError as error_rol:
+        print(f"      • Intento de cierre por Técnico bloqueado -> '{error_rol}'")
+
+    # PASO 4: Cierre validado por Investigador e inmutabilidad post-cierre
+    experimento.finalizar(investigador)
+    servicio.experimento_repo.guardar(experimento)
+    print("\n[4/7] APROBACIÓN E INMUTABILIDAD POST-CIERRE")
+    print(f"      • Cierre aprobado por Investigador -> Estado: '{experimento.estado}'")
+    try:
+        experimento.consumir_muestra(muestra, 1.0)
+    except ValueError as error_cerrado:
+        print(f"      • Mutación tras cierre bloqueada -> '{error_cerrado}'")
+
+    # PASO 5: Bifurcación versionada (deepcopy) y exportación de informe Markdown
     bifurcado = servicio.bifurcar_experimento_activo("2.0")
+    ruta_informe = servicio.generar_informe_markdown("informe_demo.md")
+    print("\n[5/7] VERSIONADO INMUTABLE Y GENERACIÓN DE INFORMES")
     print(
-        f"3. Bifurcación versionada -> Nueva versión: v{bifurcado.version} ({len(bifurcado.historial_eventos)} eventos heredados)"
+        f"      • Bifurcación creada: v{bifurcado.version} "
+        f"(Nuevo UUID: {bifurcado.id_experimento})"
+    )
+    print(f"      • Informe técnico exportado en: '{ruta_informe}'")
+    servicio.cerrar()
+
+    # PASO 6: Recuperación multisesión desde disco (nueva instancia del servicio)
+    print("\n[6/7] PERSISTENCIA REAL Y RECUPERACIÓN ENTRE SESIONES")
+    servicio_recuperacion = LaboratorioService.crear_desde_sqlite(str(ruta_db_demo))
+    recuperado = servicio_recuperacion.experimento_repo.obtener_por_id(
+        bifurcado.id_experimento
+    )
+    print(
+        f"      • Recuperado desde '{ruta_db_demo}': '{recuperado.nombre}' "
+        f"(v{recuperado.version}) | Responsable: {recuperado.investigador_principal.nombre}"
     )
 
-    ruta_informe = servicio.generar_informe_markdown("informe_demo.md")
-    print(f"4. Informe automático generado -> {ruta_informe}")
+    # PASO 7: Auditoría completa de trazabilidad
+    print("\n[7/7] HISTORIAL INMUTABLE DE TRAZABILIDAD RECUPERADO:")
+    for evento in recuperado.historial_eventos:
+        print(f"      -> {evento}")
 
-    servicio.cerrar()
-    print("✅ DEMO FINALIZADA CON ÉXITO.\n")
+    servicio_recuperacion.cerrar()
+    print("\n" + "=" * 68)
+    print("✅ DEMO COMPLETADA — Puedes recuperar cualquiera de los UUID en el menú CLI")
+    print("=" * 68 + "\n")
 
 
 if __name__ == "__main__":

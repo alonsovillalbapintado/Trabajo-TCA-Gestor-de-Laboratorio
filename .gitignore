@@ -17,3 +17,6 @@ __pycache__/
 # Archivos ocultos del sistema operativo
 .DS_Store
 Thumbs.db
+
+labtrack_demo.db
+informe_*.md

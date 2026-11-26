@@ -174,3 +174,40 @@
 2026-11-26 19:54:13,453 - INFO - Cierre limpio de la aplicación y liberación de recursos.
 2026-11-26 19:54:13,454 - INFO - Experimento recuperado en sesión: 2241d942-77d2-4766-861c-50ff49fa7619
 2026-11-26 19:54:13,454 - INFO - Cierre limpio de la aplicación y liberación de recursos.
+2026-11-26 20:33:28,808 - INFO - Experimento creado y persistido: b53a3fdd-89c7-4f12-9072-92e3c1e4093c
+2026-11-26 20:33:28,808 - INFO - Experimento bifurcado a versión 2.0 (ID: 57970ffc-fc0d-4b7b-baa4-6db27be1b158)
+2026-11-26 20:33:28,809 - INFO - Informe automático exportado en 'informe_demo.md'.
+2026-11-26 20:33:28,809 - INFO - Cierre limpio de la aplicación y liberación de recursos.
+2026-11-26 20:33:37,761 - INFO - Experimento creado y persistido: 59905ecd-731c-4c47-ad2c-4fd02072469d
+2026-11-26 20:33:37,762 - INFO - Experimento bifurcado a versión 2.0 (ID: cd932ae2-b83c-4e9c-a9db-046b14af7312)
+2026-11-26 20:33:37,762 - INFO - Informe automático exportado en 'informe_demo.md'.
+2026-11-26 20:33:37,762 - INFO - Cierre limpio de la aplicación y liberación de recursos.
+2026-11-26 20:33:41,954 - INFO - Experimento creado y persistido: b8e2f423-1d4c-4951-bfc0-f756d4cd5d09
+2026-11-26 20:33:42,093 - INFO - Experimento bifurcado a versión 2.0 (ID: 6a9521de-2fdf-40b4-8be8-bce2ec69fa1a)
+2026-11-26 20:33:42,094 - INFO - Informe automático exportado en 'informe_demo.md'.
+2026-11-26 20:33:42,095 - INFO - Cierre limpio de la aplicación y liberación de recursos.
+2026-11-26 20:40:45,169 - INFO - Iniciando aplicación LabTrack...
+2026-11-26 20:40:45,170 - WARNING - Opción de menú inválida: 99
+2026-11-26 20:40:45,170 - WARNING - Acción denegada en Opción 2: No hay ningún experimento activo en la sesión. Crea o carga uno primero.
+2026-11-26 20:40:45,170 - INFO - Experimento creado y persistido: 0694e0b3-e74a-4a1c-b3c7-071621225849
+2026-11-26 20:40:45,171 - INFO - Evento registrado en experimento 0694e0b3-e74a-4a1c-b3c7-071621225849: Investigador Alonso (Principal) diseñando protocolo y validando hipótesis
+2026-11-26 20:40:45,171 - WARNING - Acción denegada en Opción 2: La descripción de la acción de trazabilidad no puede estar vacía.
+2026-11-26 20:40:45,171 - INFO - Experimento bifurcado a versión 2.0 (ID: ceeabcbe-d55b-45dd-9663-487f461e22ac)
+2026-11-26 20:40:45,172 - INFO - Cierre limpio de la aplicación y liberación de recursos.
+2026-11-26 20:40:45,174 - INFO - Experimento creado y persistido: 79e0d365-49c4-4cb9-b236-b63752aae6f4
+2026-11-26 20:40:45,174 - INFO - Evento registrado en experimento 79e0d365-49c4-4cb9-b236-b63752aae6f4: Técnico Matías (Turno: Noche) calibrando instrumental y preparando reactivos
+2026-11-26 20:40:45,174 - INFO - Evento registrado en experimento 79e0d365-49c4-4cb9-b236-b63752aae6f4: Ajuste de presión
+2026-11-26 20:40:45,195 - INFO - Experimento creado y persistido: d8b6277c-fc53-4125-a4cd-752b95859227
+2026-11-26 20:40:45,199 - INFO - Cierre limpio de la aplicación y liberación de recursos.
+2026-11-26 20:40:45,200 - INFO - Experimento recuperado en sesión: d8b6277c-fc53-4125-a4cd-752b95859227
+2026-11-26 20:40:45,200 - INFO - Cierre limpio de la aplicación y liberación de recursos.
+2026-11-26 20:40:45,433 - INFO - Experimento creado y persistido: 1da84391-ee10-4734-8a8d-ad7d89fcb86c
+2026-11-26 20:40:45,442 - INFO - Experimento bifurcado a versión 2.0 (ID: f7b53f8b-e7fb-4d89-a80d-a1ac53b2ce15)
+2026-11-26 20:40:45,442 - INFO - Informe automático exportado en 'informe_demo.md'.
+2026-11-26 20:40:45,443 - INFO - Cierre limpio de la aplicación y liberación de recursos.
+2026-11-26 20:40:45,445 - INFO - Cierre limpio de la aplicación y liberación de recursos.
+2026-11-26 20:59:56,814 - INFO - Experimento creado y persistido: 4bc2fa64-9d10-4b8d-83ef-b5a6c9e4c47b
+2026-11-26 20:59:56,824 - INFO - Experimento bifurcado a versión 2.0 (ID: d529c4ec-69ce-49fe-9550-d8c2634b5671)
+2026-11-26 20:59:56,824 - INFO - Informe automático exportado en 'informe_demo.md'.
+2026-11-26 20:59:56,825 - INFO - Cierre limpio de la aplicación y liberación de recursos.
+2026-11-26 20:59:56,826 - INFO - Cierre limpio de la aplicación y liberación de recursos.
