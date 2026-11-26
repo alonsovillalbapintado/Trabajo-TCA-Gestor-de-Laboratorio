@@ -33,7 +33,7 @@ class Investigador(MiembroLaboratorio):
         self.rol = rol.strip() if rol and rol.strip() else "Principal"
 
     def ejecutar_tarea(self) -> str:
-        return f"Análisis científico y validación de hipótesis por {self.nombre} ({self.rol})"
+        return f"Investigador {self.nombre} ({self.rol}) diseñando protocolo y validando hipótesis"
 
     def puede_aprobar_experimento(self) -> bool:
         return True
@@ -47,7 +47,7 @@ class Tecnico(MiembroLaboratorio):
         self.turno = turno.strip()
 
     def ejecutar_tarea(self) -> str:
-        return f"Calibración instrumental y preparación de reactivos por {self.nombre} (Turno: {self.turno})"
+        return f"Técnico {self.nombre} (Turno: {self.turno}) calibrando instrumental y preparando reactivos"
 
     def puede_calibrar_equipo(self) -> bool:
         return True

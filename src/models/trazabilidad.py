@@ -22,7 +22,11 @@ class EventoTrazabilidad:
     @property
     def id_miembro(self) -> str:
         return self._id_miembro
-
+    
+    @property
+    def id_investigador(self) -> str:
+        return self._id_miembro
+    
     def __setattr__(self, name, value):
         raise AttributeError("EventoTrazabilidad es inmutable y no permite modificar sus atributos.")
 
