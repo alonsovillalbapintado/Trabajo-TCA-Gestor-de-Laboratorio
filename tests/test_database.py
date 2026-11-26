@@ -1,32 +1,33 @@
-import pytest
-from src.persistence.database import GestorBaseDatos
-from src.models.personal import Investigador
-from src.models.experimento import Experimento
+from src.persistence.database import ConexionBaseDatos
+from src.persistence.repositories import PersonalRepository, ExperimentoRepository
+from src.services.laboratorio_service import LaboratorioService
 
-def test_guardar_y_recuperar_experimento():
-    """Valida que un experimento y su trazabilidad se guardan en SQLite correctamente."""
-    # Instanciamos la base de datos en memoria para no afectar al archivo labtrack.db real
-    db = GestorBaseDatos(":memory:")
-    
-    # Preparamos los datos de prueba
-    inv = Investigador("Alonso", "Informática", "Principal")
-    exp = Experimento("Prueba Cobertura", inv)
-    exp.registrar_evento("Calibración inicial de prueba")
-    
-    # Guardamos en la base de datos
-    db.guardar_experimento(exp)
-    
-    # Verificamos leyendo directamente con SQL
+def test_repositorios_y_servicio_en_memoria():
+    """Valida la separación entre conexión, repositorios y capa de servicio."""
+    db = ConexionBaseDatos(":memory:")
+    personal_repo = PersonalRepository(db.conexion)
+    exp_repo = ExperimentoRepository(db.conexion, personal_repo)
+    servicio = LaboratorioService(exp_repo)
+
+    # 1. Flujo a través de la capa de servicio
+    inv = servicio.registrar_personal("1", "Alonso", "Informática", "Principal")
+    exp = servicio.crear_experimento("Prueba Arquitectura Limpia", inv)
+    servicio.registrar_evento(exp, inv, automatico=False, descripcion="Calibración inicial")
+
+    # 2. Verificación directa en los repositorios
+    recuperado = personal_repo.obtener_por_id(inv.id_miembro)
+    assert recuperado is not None
+    assert recuperado.nombre == "Alonso"
+
     cursor = db.conexion.cursor()
-    
-    # 1. Comprobar que el experimento existe
     cursor.execute("SELECT nombre FROM experimentos WHERE id_experimento = ?", (exp.id_experimento,))
-    resultado_exp = cursor.fetchone()
-    assert resultado_exp is not None
-    assert resultado_exp[0] == "Prueba Cobertura"
-    
-    # 2. Comprobar que la trazabilidad se guardó en cascada
+    assert cursor.fetchone()[0] == "Prueba Arquitectura Limpia"
+
     cursor.execute("SELECT accion FROM trazabilidad WHERE id_experimento = ?", (exp.id_experimento,))
-    resultado_evento = cursor.fetchone()
-    assert resultado_evento is not None
-    assert resultado_evento[0] == "Calibración inicial de prueba"
+    assert cursor.fetchone()[0] == "Calibración inicial"
+
+    # 3. Probar bifurcación desde el servicio
+    exp_v2 = servicio.bifurcar_experimento(exp, "2.0")
+    assert exp_v2.version == "2.0"
+
+    db.cerrar()
