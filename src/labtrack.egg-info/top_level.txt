@@ -1,1 +1,4 @@
-main
+cli
+models
+persistence
+services

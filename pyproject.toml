@@ -11,9 +11,15 @@ authors = [
 ]
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = [
+
+# Dependencias de ejecución (runtime): vacío porque usa exclusivamente la librería estándar de Python
+dependencies = []
+
+# Dependencias opcionales aisladas por perfil (pruebas y desarrollo)
+[project.optional-dependencies]
+dev = [
     "pytest>=7.0.0",
-    "pytest-cov>=4.0.0"
+    "pytest-cov>=4.0.0",
 ]
 
 [tool.pytest.ini_options]
