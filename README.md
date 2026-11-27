@@ -11,7 +11,7 @@
 
 **LabTrack** es una aplicación en Python diseñada para gestionar el ciclo de vida completo de experimentos científicos en un laboratorio de investigación. El sistema garantiza la **trazabilidad inmutable** de todas las operaciones realizadas sobre muestras, equipamiento y versiones de experimentos, almacenando los datos de forma persistente en **SQLite**.
 
-El proyecto está construido sobre una **arquitectura en cuatro capas** (`CLI` $\rightarrow$ `Services` $\rightarrow$ `Models` $\leftarrow$ `Persistence`) aplicando principios SOLID (especialmente Responsabilidad Única e Inyección de Dependencias), un modelo de dominio rico con máquinas de estado e invariantes encapsulados, registro centralizado de auditoría (`logging`), informes técnicos automáticos en Markdown, pruebas automatizadas con un **87 % de cobertura** e integración continua mediante **GitHub Actions**.
+El proyecto está construido sobre una **arquitectura en cuatro capas** (`CLI` $\rightarrow$ `Services` $\rightarrow$ `Models` $\leftarrow$ `Persistence`) aplicando principios SOLID (especialmente Responsabilidad Única e Inyección de Dependencias), un modelo de dominio rico con máquinas de estado e invariantes encapsulados, registro centralizado de auditoría (`logging`), informes técnicos automáticos en Markdown, pruebas automatizadas con un **88 % de cobertura** e integración continua mediante **GitHub Actions**.
 
 ---
 
@@ -250,7 +250,7 @@ servicio.cerrar()
 
 ## 6. Pruebas Automatizadas, Calidad y CI/CD
 
-### Suite de Pruebas (`14 tests` / `87 % cobertura`)
+### Suite de Pruebas (`15 tests` / `88 % cobertura`)
 Las pruebas se ejecutan con `pytest` y `pytest-cov`, superando el objetivo del 70 % e incluyendo pruebas unitarias, de integración con SQLite en memoria (`:memory:`), mocking de interfaz y flujos completos multisesión:
 
 * `tests/test_main.py`: Validación de reglas básicas, casos límite de stock, bifurcación y polimorfismo.
@@ -314,7 +314,7 @@ Trabajo-TCA-Gestor-de-Laboratorio/
 
 * **`v0.1.0` (PRAC2):** Diseño inicial Orientado a Objetos, jerarquía de personal, trazabilidad en memoria y bifurcación inmutable de versiones.
 * **`v0.2.0` (PRAC3):** Persistencia relacional en SQLite, logging centralizado (`labtrack_system.log`), manejo de excepciones y primeras pruebas con `pytest`.
-* **`v1.0.0` (PRAC4 — Actual):** Arquitectura desacoplada en 4 capas, repositorios independientes (SRP), dominio rico con máquinas de estado, exportación automática de informes en Markdown, modo `--demo`, pipeline CI/CD y cobertura del **87 %**.
+* **`v1.0.0` (PRAC4 — Actual):** Arquitectura desacoplada en 4 capas, repositorios independientes (SRP), dominio rico con máquinas de estado, exportación automática de informes en Markdown, modo `--demo`, pipeline CI/CD y cobertura del **88 %**.
 * **`v1.1.0` (Futuro):** Incorporación de una interfaz web (FastAPI / Streamlit) conectada directamente a `LaboratorioService` y exportación de informes en PDF.
 
 ---

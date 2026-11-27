@@ -9,7 +9,7 @@ Todos los cambios notables de **LabTrack** se documentan en este archivo.
 - **Repositorios Independientes (`PersonalRepository` y `ExperimentoRepository`):** Separación del acceso a datos por agregado aplicando el Principio de Responsabilidad Única (SRP) y reconstrucción polimórfica desde base de datos (`obtener_por_id`).
 - **Modo Demo (`--demo`) e Informes Automáticos:** Ejecución desatendida para validación rápida en clase y exportación de informes técnicos en formato Markdown.
 - **Reglas de Negocio en Dominio:** Máquinas de estado en `Experimento` y `Equipamiento` (paso automático a mantenimiento por desgaste), control de contaminación y umbral crítico en `Muestra`, políticas de autorización por rol en `MiembroLaboratorio` e inmutabilidad estricta en `EventoTrazabilidad`.
-- **Suite de Pruebas Ampliada (87 % cobertura):** Incorporación de `test_domain_rules.py` y `test_e2e_workflows.py` para validar recuperación multisesión, integridad referencial y errores de usuario.
+- **Suite de Pruebas Ampliada (88 % cobertura):** Incorporación de `test_domain_rules.py` y `test_e2e_workflows.py` para validar recuperación multisesión, integridad referencial y errores de usuario.
 - **Calidad, CI/CD y Documentación:** Pipeline en GitHub Actions (`black`, `ruff`, `pytest`), licencia MIT, `.env.example` y documentación API en `docs/`.
 
 ### Cambiado
