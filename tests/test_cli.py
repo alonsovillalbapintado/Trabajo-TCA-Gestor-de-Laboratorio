@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.cli.main import ejecutar_flujo_principal
+from src.cli.main import ejecutar_flujo_principal, ejecutar_modo_demo
 from src.services.laboratorio_service import LaboratorioService
 
 
@@ -45,3 +45,10 @@ def test_cli_sesion_completa_y_errores_usuario(capsys):
     assert "Acción denegada" in salida
     assert "Experimento bifurcado y guardado" in salida
     assert "Red Neuronal" in salida
+
+
+def test_modo_demo_ejecucion_completa(monkeypatch, tmp_path):
+    """Valida que el modo --demo se ejecuta de principio a fin sin errores."""
+    monkeypatch.chdir(tmp_path)
+    ejecutar_modo_demo()
+    assert (tmp_path / "informe_demo.md").exists()
